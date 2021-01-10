@@ -3,11 +3,14 @@
 import random
 
 from game.board import Board
+from game.player import Player
 
 
 # TODO(AD) State machine?
 class Backgammon:
-    def __init__(self):
+    def __init__(self, opponent):
+        self._opponent = opponent
+
         self._board = Board()
         self._rolls = []
 
@@ -22,6 +25,14 @@ class Backgammon:
             return False
 
         del self._rolls[self._rolls.index(steps)]
+
+        # TODO if rolls empty then run player.turn(board) to get
+        # move
+
+        if len(self._rolls) == 0:
+            self._opponent.turn(self._board)
+
+
         return True
 
     def roll(self):

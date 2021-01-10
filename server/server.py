@@ -7,10 +7,11 @@ import json
 import websockets
 
 from game.backgammon import Backgammon
+from game.player import RandomPlayer
 
 
 async def handle(websocket, path):
-    game = Backgammon()
+    game = Backgammon(RandomPlayer())
 
     # TODO(AD) randomly select who goes first - if AI then run
     # the move before sending init
