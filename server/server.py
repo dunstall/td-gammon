@@ -1,3 +1,5 @@
+# Copyright 2021 Andrew Dunstall
+
 import asyncio
 import logging
 import json
@@ -46,11 +48,3 @@ def run_server():
 
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
-
-# Use type as first element of list
-#  ["eventMatchStart",{"match":{"id":76538953,"host"
-
-#  Sending message movePiece with ID 5
-# {"piece":{"type":0,"id":13},"steps":2,"moveSequence":0,"clientMsgSeq":5}
-
-# eventPieceMove
