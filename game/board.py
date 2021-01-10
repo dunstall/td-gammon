@@ -7,6 +7,9 @@ class Board:
     _NUM_POINTS = 24
     _STATE_SIZE = 198
 
+    _MIN_MOVE = 1
+    _MAX_MOVE = 6
+
     def __init__(self):
         self._whites = np.array([
             0, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 0,
@@ -20,6 +23,44 @@ class Board:
         self._black_bar = 0
         self._white_removed = 0
         self._black_removed = 0
+
+    def white_bar(self):
+        return self._white_bar
+
+    def black_bar(self):
+        return self._black_bar
+
+    # TODO(AD) properties
+    def whites(self):
+        return self._whites
+
+    def blacks(self):
+        return self._blacks
+
+    def move(self, position, steps) -> bool:
+        # No checkers to move at this position.
+        if self._whites[position] == 0:
+            return False
+
+        if steps < self._MIN_MOVE or steps > self._MAX_MOVE:
+            return False
+
+        new_position = position + steps
+        if new_position >= self._NUM_POINTS:
+            return False
+
+        # Point occupied by opponent.
+        n_occupied = self._blacks[self._NUM_POINTS - new_position - 1]
+        if n_occupied >= 2:
+            return False
+        elif n_occupied == 1:
+            # Hit
+            self._blacks[self._NUM_POINTS - new_position - 1] = 0
+            self._black_bar = 1
+
+        self._whites[position] -= 1
+        self._whites[position + steps] += 1
+        return True
 
     def state(self):
         return {

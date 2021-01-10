@@ -19,9 +19,14 @@ async def handle(websocket, path):
     }
     await websocket.send(json.dumps(msg))
 
-    # Each round of the episode.
     while True:
         r = await websocket.recv()
+        payload = json.loads(r)
+
+        if payload["type"] == "rollDice":
+            resp = {"type": "rollDice", "roll": game.roll()}
+            await websocket.send(json.dumps(resp))
+
 
         # TODO(AD)
         # 1 Wait for clicking 'roll'            RECV
@@ -31,16 +36,28 @@ async def handle(websocket, path):
         # 5 Send updated state (after AI move too)  SEND
         # 6 Repeat.
 
-        payload = json.loads(r)
-        print(payload)
 
-        if payload["type"] == "rollDice":
-            print("sending roll dice")
-            #  json.loads(b.json_encode_roll())
-            resp = {"type": "rollDice", "roll": [5, 1]}
-            await websocket.send(json.dumps(resp))
 
-        #  if payload["type"] == "movePiece":
+
+
+        if payload["type"] == "movePiece":
+            print(payload)
+            game.move(payload["position"], payload["steps"])
+
+            # TODO handle invalid move
+
+            # TODO AI play its move before sending state
+
+            msg = {
+                "type": "eventMatchStart",
+                "state": game.board().state()
+                # TODO add rolls with one decr?
+            }
+            await websocket.send(json.dumps(msg))
+
+
+        #  {'position': 12, 'steps': 5, 'clientMsgSeq': None, 'type': 'movePiece'}
+
             # TODO(AD) game.move(...)
 
             #  print("sending move pience")
