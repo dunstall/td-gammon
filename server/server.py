@@ -13,10 +13,8 @@ async def handle(websocket, path):
     game = Backgammon()
 
     # Send match start.
-    msg = {
-        "type": "eventMatchStart",
-        "state": game.board().state()
-    }
+    msg = game.state()
+    msg["type"] = "eventMatchStart"
     await websocket.send(json.dumps(msg))
 
     while True:
@@ -24,8 +22,25 @@ async def handle(websocket, path):
         payload = json.loads(r)
 
         if payload["type"] == "rollDice":
-            resp = {"type": "rollDice", "roll": game.roll()}
-            await websocket.send(json.dumps(resp))
+            print("rollDice")
+
+            game.roll()
+
+            # TODO(AD) Just return eventMatchUpdate with new rolls
+            #  resp = {"type": "rollDice", "roll": game.roll()}
+            #  await websocket.send(json.dumps(resp))
+
+            msg = game.state()
+            msg["type"] = "eventMatchStart"
+#                  "type": "eventMatchStart",  # TODO(AD) eventMatchUpdate
+                #  # TODO renabe state-> board - then add 'state' for rolls etc
+                #  "board": game.board().state(),
+                #  "state": {
+                    #  "rolls": []
+                #  }
+                #  # TODO add rolls with one decr?
+            #  }
+            await websocket.send(json.dumps(msg))
 
 
         # TODO(AD)
@@ -42,17 +57,26 @@ async def handle(websocket, path):
 
         if payload["type"] == "movePiece":
             print(payload)
+            # TODO(AD) Handle error
             game.move(payload["position"], payload["steps"])
+
+            # TODO remove the roll from the game
 
             # TODO handle invalid move
 
             # TODO AI play its move before sending state
 
-            msg = {
-                "type": "eventMatchStart",
-                "state": game.board().state()
-                # TODO add rolls with one decr?
-            }
+#              msg = {
+                #  "type": "eventMatchStart",  # TODO(AD) eventMatchUpdate
+                #  # TODO renabe state-> board - then add 'state' for rolls etc
+                #  "board": game.board().state(),
+                #  "state": {
+                    #  "rolls": []
+                #  }
+                #  # TODO add rolls with one decr?
+            #  }
+            msg = game.state()
+            msg["type"] = "eventMatchStart"
             await websocket.send(json.dumps(msg))
 
 
