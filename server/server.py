@@ -31,13 +31,14 @@ async def handle(websocket, path):
         # 5 Send updated state (after AI move too)  SEND
         # 6 Repeat.
 
-        #  payload = json.loads(r)
-        #  print(payload)
+        payload = json.loads(r)
+        print(payload)
 
-        #  if payload["type"] == "rollDice":
-            #  print("sending roll dice")
+        if payload["type"] == "rollDice":
+            print("sending roll dice")
             #  json.loads(b.json_encode_roll())
-            #  await websocket.send(b.json_encode_roll())
+            resp = {"type": "rollDice", "roll": [5, 1]}
+            await websocket.send(json.dumps(resp))
 
         #  if payload["type"] == "movePiece":
             # TODO(AD) game.move(...)
