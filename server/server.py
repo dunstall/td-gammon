@@ -12,6 +12,9 @@ from game.backgammon import Backgammon
 async def handle(websocket, path):
     game = Backgammon()
 
+    # TODO(AD) randomly select who goes first - if AI then run
+    # the move before sending init
+
     # Send match start.
     msg = game.state()
     msg["type"] = "eventMatchStart"
@@ -22,76 +25,38 @@ async def handle(websocket, path):
         payload = json.loads(r)
 
         if payload["type"] == "rollDice":
-            print("rollDice")
-
             game.roll()
 
-            # TODO(AD) Just return eventMatchUpdate with new rolls
-            #  resp = {"type": "rollDice", "roll": game.roll()}
-            #  await websocket.send(json.dumps(resp))
+            # TODO(AD) if no permiited moves continue to next round
 
             msg = game.state()
             msg["type"] = "eventMatchStart"
-#                  "type": "eventMatchStart",  # TODO(AD) eventMatchUpdate
-                #  # TODO renabe state-> board - then add 'state' for rolls etc
-                #  "board": game.board().state(),
-                #  "state": {
-                    #  "rolls": []
-                #  }
-                #  # TODO add rolls with one decr?
-            #  }
             await websocket.send(json.dumps(msg))
 
-
         # TODO(AD)
-        # 1 Wait for clicking 'roll'            RECV
-        # 2 Send rollDice and permitted moves   SEND
-        # 3 Recv move                           RECV
-        # 4 game.move(move)
         # 5 Send updated state (after AI move too)  SEND
         # 6 Repeat.
 
-
-
-
+        # TODO(AD) Rules
+        # - Handle case no available moves given the roll
+        #   for this already need to gen list of permitted moves for AI so
+        #   can do this here too - ie if permitted moves empty move on
+        # - If only one move available given the roll must pick highest
+        # - FE not handling middle of board (hit)
+        # - Allow moving from the bar to the board
+        # - Cannot move other checkers until all those on bar removed
+        # - Bearing off
 
         if payload["type"] == "movePiece":
-            print(payload)
-            # TODO(AD) Handle error
             game.move(payload["position"], payload["steps"])
 
-            # TODO remove the roll from the game
+            # TODO(AD) if no permiited moves to next round
 
-            # TODO handle invalid move
+            # TODO(AD) If rolls empty let AI play its move
 
-            # TODO AI play its move before sending state
-
-#              msg = {
-                #  "type": "eventMatchStart",  # TODO(AD) eventMatchUpdate
-                #  # TODO renabe state-> board - then add 'state' for rolls etc
-                #  "board": game.board().state(),
-                #  "state": {
-                    #  "rolls": []
-                #  }
-                #  # TODO add rolls with one decr?
-            #  }
             msg = game.state()
             msg["type"] = "eventMatchStart"
             await websocket.send(json.dumps(msg))
-
-
-        #  {'position': 12, 'steps': 5, 'clientMsgSeq': None, 'type': 'movePiece'}
-
-            # TODO(AD) game.move(...)
-
-            #  print("sending move pience")
-            #  json.loads(b.json_encode2())
-            #  await websocket.send(b.json_encode2())
-
-        # TODO once player moved get the 'AI' to play its turn
-        # send eventPieceMove for each move
-        # then eventTurnStart
-
 
 
 def run_server():

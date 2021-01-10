@@ -3,6 +3,10 @@
 import numpy as np
 
 
+PLAYER_WHITE = 0
+PLAYER_BLACK = 1
+
+
 class Board:
     _NUM_POINTS = 24
     _STATE_SIZE = 198
@@ -37,8 +41,7 @@ class Board:
     def blacks(self):
         return self._blacks
 
-    # Return [(pos, steps), ...]
-    def permitted_moves(self, rolls):
+    def permitted_moves(self, rolls, player=PLAYER_WHITE):
         # Ensure rolls unique.
         rolls = list(set(rolls))
 
@@ -49,19 +52,25 @@ class Board:
                    permitted.append((position, steps))
         return permitted
 
-    def move(self, position, steps) -> bool:
+    def move(self, position, steps, player=PLAYER_WHITE) -> bool:
+        player_points = self._whites if player == PLAYER_WHITE else self._blacks
+        opponent_points = self._blacks if player == PLAYER_WHITE else self._whites
+
         if not self._move_permitted(position, steps):
             return False
 
         new_position = position + steps
-        n_occupied = self._blacks[self._NUM_POINTS - new_position - 1]
+        n_occupied = opponent_points[self._NUM_POINTS - new_position - 1]
         if n_occupied == 1:
             # Hit
-            self._blacks[self._NUM_POINTS - new_position - 1] = 0
-            self._black_bar = 1
+            opponent_points[self._NUM_POINTS - new_position - 1] = 0
+            if player == PLAYER_WHITE:
+                 self._black_bar += 1
+            else:
+                 self._white_bar += 1
 
-        self._whites[position] -= 1
-        self._whites[position + steps] += 1
+        player_points[position] -= 1
+        player_points[position + steps] += 1
         return True
 
     def state(self):
