@@ -1,15 +1,23 @@
 class Board:
+    def state(self):
+        return {
+            "white_bar": 0,
+            "black_bar": 0,
+            "white_removed": 0,
+            "black_removed": 0,
+            "white": [0, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+            "black": [0, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+        }
+
     def json_encode(self):
         return """
         {
             "type": "eventMatchStart",
             "match": {
                 "currentGame": {
-                    "hasStarted": true,
                     "id": 15850181,
                     "isOver": false,
                     "moveSequence": 0,
-                    "previousState": null,
                     "previousTurnDice": null,
                     "state": {
                         "bar": [
@@ -18,207 +26,17 @@ class Board:
                         ],
                         "blackBar": [],
                         "blackOutside": [],
-                        "blackPieces": [
-                            {
-                                "id": 16,
-                                "type": 1
-                            },
-                            {
-                                "id": 17,
-                                "type": 1
-                            },
-                            {
-                                "id": 18,
-                                "type": 1
-                            },
-                            {
-                                "id": 19,
-                                "type": 1
-                            },
-                            {
-                                "id": 20,
-                                "type": 1
-                            },
-                            {
-                                "id": 21,
-                                "type": 1
-                            },
-                            {
-                                "id": 22,
-                                "type": 1
-                            },
-                            {
-                                "id": 23,
-                                "type": 1
-                            },
-                            {
-                                "id": 24,
-                                "type": 1
-                            },
-                            {
-                                "id": 25,
-                                "type": 1
-                            },
-                            {
-                                "id": 26,
-                                "type": 1
-                            },
-                            {
-                                "id": 27,
-                                "type": 1
-                            },
-                            {
-                                "id": 28,
-                                "type": 1
-                            },
-                            {
-                                "id": 29,
-                                "type": 1
-                            },
-                            {
-                                "id": 30,
-                                "type": 1
-                            }
-                        ],
                         "nextPieceID": 31,
                         "outside": [
                             [],
                             []
                         ],
-                        "pieces": [
-                            [
-                                {
-                                    "id": 1,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 2,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 3,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 4,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 5,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 6,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 7,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 8,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 9,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 10,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 11,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 12,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 13,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 14,
-                                    "type": 0
-                                },
-                                {
-                                    "id": 15,
-                                    "type": 0
-                                }
-                            ],
-                            [
-                                {
-                                    "id": 16,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 17,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 18,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 19,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 20,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 21,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 22,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 23,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 24,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 25,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 26,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 27,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 28,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 29,
-                                    "type": 1
-                                },
-                                {
-                                    "id": 30,
-                                    "type": 1
-                                }
-                            ]
-                        ],
                         "points": [
                             [
                                 {
-                                    "id": 29,
                                     "type": 1
                                 },
                                 {
-                                    "id": 30,
                                     "type": 1
                                 }
                             ],
@@ -228,38 +46,30 @@ class Board:
                             [],
                             [
                                 {
-                                    "id": 1,
                                     "type": 0
                                 },
                                 {
-                                    "id": 2,
                                     "type": 0
                                 },
                                 {
-                                    "id": 3,
                                     "type": 0
                                 },
                                 {
-                                    "id": 4,
                                     "type": 0
                                 },
                                 {
-                                    "id": 5,
                                     "type": 0
                                 }
                             ],
                             [],
                             [
                                 {
-                                    "id": 6,
                                     "type": 0
                                 },
                                 {
-                                    "id": 7,
                                     "type": 0
                                 },
                                 {
-                                    "id": 8,
                                     "type": 0
                                 }
                             ],
@@ -268,45 +78,35 @@ class Board:
                             [],
                             [
                                 {
-                                    "id": 24,
                                     "type": 1
                                 },
                                 {
-                                    "id": 25,
                                     "type": 1
                                 },
                                 {
-                                    "id": 26,
                                     "type": 1
                                 },
                                 {
-                                    "id": 27,
                                     "type": 1
                                 },
                                 {
-                                    "id": 28,
                                     "type": 1
                                 }
                             ],
                             [
                                 {
-                                    "id": 9,
                                     "type": 0
                                 },
                                 {
-                                    "id": 10,
                                     "type": 0
                                 },
                                 {
-                                    "id": 11,
                                     "type": 0
                                 },
                                 {
-                                    "id": 12,
                                     "type": 0
                                 },
                                 {
-                                    "id": 13,
                                     "type": 0
                                 }
                             ],
@@ -315,38 +115,30 @@ class Board:
                             [],
                             [
                                 {
-                                    "id": 21,
                                     "type": 1
                                 },
                                 {
-                                    "id": 22,
                                     "type": 1
                                 },
                                 {
-                                    "id": 23,
                                     "type": 1
                                 }
                             ],
                             [],
                             [
                                 {
-                                    "id": 16,
                                     "type": 1
                                 },
                                 {
-                                    "id": 17,
                                     "type": 1
                                 },
                                 {
-                                    "id": 18,
                                     "type": 1
                                 },
                                 {
-                                    "id": 19,
                                     "type": 1
                                 },
                                 {
-                                    "id": 20,
                                     "type": 1
                                 }
                             ],
@@ -356,79 +148,15 @@ class Board:
                             [],
                             [
                                 {
-                                    "id": 14,
                                     "type": 0
                                 },
                                 {
-                                    "id": 15,
                                     "type": 0
                                 }
                             ]
                         ],
                         "whiteBar": [],
-                        "whiteOutside": [],
-                        "whitePieces": [
-                            {
-                                "id": 1,
-                                "type": 0
-                            },
-                            {
-                                "id": 2,
-                                "type": 0
-                            },
-                            {
-                                "id": 3,
-                                "type": 0
-                            },
-                            {
-                                "id": 4,
-                                "type": 0
-                            },
-                            {
-                                "id": 5,
-                                "type": 0
-                            },
-                            {
-                                "id": 6,
-                                "type": 0
-                            },
-                            {
-                                "id": 7,
-                                "type": 0
-                            },
-                            {
-                                "id": 8,
-                                "type": 0
-                            },
-                            {
-                                "id": 9,
-                                "type": 0
-                            },
-                            {
-                                "id": 10,
-                                "type": 0
-                            },
-                            {
-                                "id": 11,
-                                "type": 0
-                            },
-                            {
-                                "id": 12,
-                                "type": 0
-                            },
-                            {
-                                "id": 13,
-                                "type": 0
-                            },
-                            {
-                                "id": 14,
-                                "type": 0
-                            },
-                            {
-                                "id": 15,
-                                "type": 0
-                            }
-                        ]
+                        "whiteOutside": []
                     },
                     "turnConfirmed": false,
                     "turnDice": null,
@@ -499,429 +227,9 @@ class Board:
     },
     "match": {
         "currentGame": {
-            "hasStarted": true,
             "id": 52725543,
             "isOver": false,
             "moveSequence": 0,
-            "previousState": {
-                "bar": [
-                    [],
-                    []
-                ],
-                "blackBar": [],
-                "blackOutside": [],
-                "blackPieces": [
-                    {
-                        "id": 16,
-                        "type": 1
-                    },
-                    {
-                        "id": 17,
-                        "type": 1
-                    },
-                    {
-                        "id": 18,
-                        "type": 1
-                    },
-                    {
-                        "id": 19,
-                        "type": 1
-                    },
-                    {
-                        "id": 20,
-                        "type": 1
-                    },
-                    {
-                        "id": 21,
-                        "type": 1
-                    },
-                    {
-                        "id": 22,
-                        "type": 1
-                    },
-                    {
-                        "id": 23,
-                        "type": 1
-                    },
-                    {
-                        "id": 24,
-                        "type": 1
-                    },
-                    {
-                        "id": 25,
-                        "type": 1
-                    },
-                    {
-                        "id": 26,
-                        "type": 1
-                    },
-                    {
-                        "id": 27,
-                        "type": 1
-                    },
-                    {
-                        "id": 28,
-                        "type": 1
-                    },
-                    {
-                        "id": 29,
-                        "type": 1
-                    },
-                    {
-                        "id": 30,
-                        "type": 1
-                    }
-                ],
-                "nextPieceID": 31,
-                "outside": [
-                    [],
-                    []
-                ],
-                "pieces": [
-                    [
-                        {
-                            "id": 1,
-                            "type": 0
-                        },
-                        {
-                            "id": 2,
-                            "type": 0
-                        },
-                        {
-                            "id": 3,
-                            "type": 0
-                        },
-                        {
-                            "id": 4,
-                            "type": 0
-                        },
-                        {
-                            "id": 5,
-                            "type": 0
-                        },
-                        {
-                            "id": 6,
-                            "type": 0
-                        },
-                        {
-                            "id": 7,
-                            "type": 0
-                        },
-                        {
-                            "id": 8,
-                            "type": 0
-                        },
-                        {
-                            "id": 9,
-                            "type": 0
-                        },
-                        {
-                            "id": 10,
-                            "type": 0
-                        },
-                        {
-                            "id": 11,
-                            "type": 0
-                        },
-                        {
-                            "id": 12,
-                            "type": 0
-                        },
-                        {
-                            "id": 13,
-                            "type": 0
-                        },
-                        {
-                            "id": 14,
-                            "type": 0
-                        },
-                        {
-                            "id": 15,
-                            "type": 0
-                        }
-                    ],
-                    [
-                        {
-                            "id": 16,
-                            "type": 1
-                        },
-                        {
-                            "id": 17,
-                            "type": 1
-                        },
-                        {
-                            "id": 18,
-                            "type": 1
-                        },
-                        {
-                            "id": 19,
-                            "type": 1
-                        },
-                        {
-                            "id": 20,
-                            "type": 1
-                        },
-                        {
-                            "id": 21,
-                            "type": 1
-                        },
-                        {
-                            "id": 22,
-                            "type": 1
-                        },
-                        {
-                            "id": 23,
-                            "type": 1
-                        },
-                        {
-                            "id": 24,
-                            "type": 1
-                        },
-                        {
-                            "id": 25,
-                            "type": 1
-                        },
-                        {
-                            "id": 26,
-                            "type": 1
-                        },
-                        {
-                            "id": 27,
-                            "type": 1
-                        },
-                        {
-                            "id": 28,
-                            "type": 1
-                        },
-                        {
-                            "id": 29,
-                            "type": 1
-                        },
-                        {
-                            "id": 30,
-                            "type": 1
-                        }
-                    ]
-                ],
-                "points": [
-                    [
-                        {
-                            "id": 29,
-                            "type": 1
-                        },
-                        {
-                            "id": 30,
-                            "type": 1
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 1,
-                            "type": 0
-                        },
-                        {
-                            "id": 2,
-                            "type": 0
-                        },
-                        {
-                            "id": 3,
-                            "type": 0
-                        },
-                        {
-                            "id": 4,
-                            "type": 0
-                        },
-                        {
-                            "id": 5,
-                            "type": 0
-                        }
-                    ],
-                    [],
-                    [
-                        {
-                            "id": 6,
-                            "type": 0
-                        },
-                        {
-                            "id": 7,
-                            "type": 0
-                        },
-                        {
-                            "id": 8,
-                            "type": 0
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 24,
-                            "type": 1
-                        },
-                        {
-                            "id": 25,
-                            "type": 1
-                        },
-                        {
-                            "id": 26,
-                            "type": 1
-                        },
-                        {
-                            "id": 27,
-                            "type": 1
-                        },
-                        {
-                            "id": 28,
-                            "type": 1
-                        }
-                    ],
-                    [
-                        {
-                            "id": 9,
-                            "type": 0
-                        },
-                        {
-                            "id": 10,
-                            "type": 0
-                        },
-                        {
-                            "id": 11,
-                            "type": 0
-                        },
-                        {
-                            "id": 12,
-                            "type": 0
-                        },
-                        {
-                            "id": 13,
-                            "type": 0
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 21,
-                            "type": 1
-                        },
-                        {
-                            "id": 22,
-                            "type": 1
-                        },
-                        {
-                            "id": 23,
-                            "type": 1
-                        }
-                    ],
-                    [],
-                    [
-                        {
-                            "id": 16,
-                            "type": 1
-                        },
-                        {
-                            "id": 17,
-                            "type": 1
-                        },
-                        {
-                            "id": 18,
-                            "type": 1
-                        },
-                        {
-                            "id": 19,
-                            "type": 1
-                        },
-                        {
-                            "id": 20,
-                            "type": 1
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 14,
-                            "type": 0
-                        },
-                        {
-                            "id": 15,
-                            "type": 0
-                        }
-                    ]
-                ],
-                "whiteBar": [],
-                "whiteOutside": [],
-                "whitePieces": [
-                    {
-                        "id": 1,
-                        "type": 0
-                    },
-                    {
-                        "id": 2,
-                        "type": 0
-                    },
-                    {
-                        "id": 3,
-                        "type": 0
-                    },
-                    {
-                        "id": 4,
-                        "type": 0
-                    },
-                    {
-                        "id": 5,
-                        "type": 0
-                    },
-                    {
-                        "id": 6,
-                        "type": 0
-                    },
-                    {
-                        "id": 7,
-                        "type": 0
-                    },
-                    {
-                        "id": 8,
-                        "type": 0
-                    },
-                    {
-                        "id": 9,
-                        "type": 0
-                    },
-                    {
-                        "id": 10,
-                        "type": 0
-                    },
-                    {
-                        "id": 11,
-                        "type": 0
-                    },
-                    {
-                        "id": 12,
-                        "type": 0
-                    },
-                    {
-                        "id": 13,
-                        "type": 0
-                    },
-                    {
-                        "id": 14,
-                        "type": 0
-                    },
-                    {
-                        "id": 15,
-                        "type": 0
-                    }
-                ]
-            },
             "previousTurnDice": {
                 "moves": [
                     5,
@@ -944,207 +252,17 @@ class Board:
                 ],
                 "blackBar": [],
                 "blackOutside": [],
-                "blackPieces": [
-                    {
-                        "id": 16,
-                        "type": 1
-                    },
-                    {
-                        "id": 17,
-                        "type": 1
-                    },
-                    {
-                        "id": 18,
-                        "type": 1
-                    },
-                    {
-                        "id": 19,
-                        "type": 1
-                    },
-                    {
-                        "id": 20,
-                        "type": 1
-                    },
-                    {
-                        "id": 21,
-                        "type": 1
-                    },
-                    {
-                        "id": 22,
-                        "type": 1
-                    },
-                    {
-                        "id": 23,
-                        "type": 1
-                    },
-                    {
-                        "id": 24,
-                        "type": 1
-                    },
-                    {
-                        "id": 25,
-                        "type": 1
-                    },
-                    {
-                        "id": 26,
-                        "type": 1
-                    },
-                    {
-                        "id": 27,
-                        "type": 1
-                    },
-                    {
-                        "id": 28,
-                        "type": 1
-                    },
-                    {
-                        "id": 29,
-                        "type": 1
-                    },
-                    {
-                        "id": 30,
-                        "type": 1
-                    }
-                ],
                 "nextPieceID": 31,
                 "outside": [
                     [],
                     []
                 ],
-                "pieces": [
-                    [
-                        {
-                            "id": 1,
-                            "type": 0
-                        },
-                        {
-                            "id": 2,
-                            "type": 0
-                        },
-                        {
-                            "id": 3,
-                            "type": 0
-                        },
-                        {
-                            "id": 4,
-                            "type": 0
-                        },
-                        {
-                            "id": 5,
-                            "type": 0
-                        },
-                        {
-                            "id": 6,
-                            "type": 0
-                        },
-                        {
-                            "id": 7,
-                            "type": 0
-                        },
-                        {
-                            "id": 8,
-                            "type": 0
-                        },
-                        {
-                            "id": 9,
-                            "type": 0
-                        },
-                        {
-                            "id": 10,
-                            "type": 0
-                        },
-                        {
-                            "id": 11,
-                            "type": 0
-                        },
-                        {
-                            "id": 12,
-                            "type": 0
-                        },
-                        {
-                            "id": 13,
-                            "type": 0
-                        },
-                        {
-                            "id": 14,
-                            "type": 0
-                        },
-                        {
-                            "id": 15,
-                            "type": 0
-                        }
-                    ],
-                    [
-                        {
-                            "id": 16,
-                            "type": 1
-                        },
-                        {
-                            "id": 17,
-                            "type": 1
-                        },
-                        {
-                            "id": 18,
-                            "type": 1
-                        },
-                        {
-                            "id": 19,
-                            "type": 1
-                        },
-                        {
-                            "id": 20,
-                            "type": 1
-                        },
-                        {
-                            "id": 21,
-                            "type": 1
-                        },
-                        {
-                            "id": 22,
-                            "type": 1
-                        },
-                        {
-                            "id": 23,
-                            "type": 1
-                        },
-                        {
-                            "id": 24,
-                            "type": 1
-                        },
-                        {
-                            "id": 25,
-                            "type": 1
-                        },
-                        {
-                            "id": 26,
-                            "type": 1
-                        },
-                        {
-                            "id": 27,
-                            "type": 1
-                        },
-                        {
-                            "id": 28,
-                            "type": 1
-                        },
-                        {
-                            "id": 29,
-                            "type": 1
-                        },
-                        {
-                            "id": 30,
-                            "type": 1
-                        }
-                    ]
-                ],
                 "points": [
                     [
                         {
-                            "id": 29,
                             "type": 1
                         },
                         {
-                            "id": 30,
                             "type": 1
                         }
                     ],
@@ -1154,38 +272,30 @@ class Board:
                     [],
                     [
                         {
-                            "id": 1,
                             "type": 0
                         },
                         {
-                            "id": 2,
                             "type": 0
                         },
                         {
-                            "id": 3,
                             "type": 0
                         },
                         {
-                            "id": 4,
                             "type": 0
                         },
                         {
-                            "id": 5,
                             "type": 0
                         }
                     ],
                     [],
                     [
                         {
-                            "id": 6,
                             "type": 0
                         },
                         {
-                            "id": 7,
                             "type": 0
                         },
                         {
-                            "id": 8,
                             "type": 0
                         }
                     ],
@@ -1194,45 +304,35 @@ class Board:
                     [],
                     [
                         {
-                            "id": 24,
                             "type": 1
                         },
                         {
-                            "id": 25,
                             "type": 1
                         },
                         {
-                            "id": 26,
                             "type": 1
                         },
                         {
-                            "id": 27,
                             "type": 1
                         },
                         {
-                            "id": 28,
                             "type": 1
                         }
                     ],
                     [
                         {
-                            "id": 9,
                             "type": 0
                         },
                         {
-                            "id": 10,
                             "type": 0
                         },
                         {
-                            "id": 11,
                             "type": 0
                         },
                         {
-                            "id": 12,
                             "type": 0
                         },
                         {
-                            "id": 13,
                             "type": 0
                         }
                     ],
@@ -1241,38 +341,30 @@ class Board:
                     [],
                     [
                         {
-                            "id": 21,
                             "type": 1
                         },
                         {
-                            "id": 22,
                             "type": 1
                         },
                         {
-                            "id": 23,
                             "type": 1
                         }
                     ],
                     [],
                     [
                         {
-                            "id": 16,
                             "type": 1
                         },
                         {
-                            "id": 17,
                             "type": 1
                         },
                         {
-                            "id": 18,
                             "type": 1
                         },
                         {
-                            "id": 19,
                             "type": 1
                         },
                         {
-                            "id": 20,
                             "type": 1
                         }
                     ],
@@ -1282,79 +374,15 @@ class Board:
                     [],
                     [
                         {
-                            "id": 14,
                             "type": 0
                         },
                         {
-                            "id": 15,
                             "type": 0
                         }
                     ]
                 ],
                 "whiteBar": [],
-                "whiteOutside": [],
-                "whitePieces": [
-                    {
-                        "id": 1,
-                        "type": 0
-                    },
-                    {
-                        "id": 2,
-                        "type": 0
-                    },
-                    {
-                        "id": 3,
-                        "type": 0
-                    },
-                    {
-                        "id": 4,
-                        "type": 0
-                    },
-                    {
-                        "id": 5,
-                        "type": 0
-                    },
-                    {
-                        "id": 6,
-                        "type": 0
-                    },
-                    {
-                        "id": 7,
-                        "type": 0
-                    },
-                    {
-                        "id": 8,
-                        "type": 0
-                    },
-                    {
-                        "id": 9,
-                        "type": 0
-                    },
-                    {
-                        "id": 10,
-                        "type": 0
-                    },
-                    {
-                        "id": 11,
-                        "type": 0
-                    },
-                    {
-                        "id": 12,
-                        "type": 0
-                    },
-                    {
-                        "id": 13,
-                        "type": 0
-                    },
-                    {
-                        "id": 14,
-                        "type": 0
-                    },
-                    {
-                        "id": 15,
-                        "type": 0
-                    }
-                ]
+                "whiteOutside": []
             },
             "turnConfirmed": false,
             "turnDice": {
@@ -1451,429 +479,9 @@ class Board:
     "clientMsgSeq": 5,
     "match": {
         "currentGame": {
-            "hasStarted": true,
             "id": 81566064,
             "isOver": false,
             "moveSequence": 1,
-            "previousState": {
-                "bar": [
-                    [],
-                    []
-                ],
-                "blackBar": [],
-                "blackOutside": [],
-                "blackPieces": [
-                    {
-                        "id": 16,
-                        "type": 1
-                    },
-                    {
-                        "id": 17,
-                        "type": 1
-                    },
-                    {
-                        "id": 18,
-                        "type": 1
-                    },
-                    {
-                        "id": 19,
-                        "type": 1
-                    },
-                    {
-                        "id": 20,
-                        "type": 1
-                    },
-                    {
-                        "id": 21,
-                        "type": 1
-                    },
-                    {
-                        "id": 22,
-                        "type": 1
-                    },
-                    {
-                        "id": 23,
-                        "type": 1
-                    },
-                    {
-                        "id": 24,
-                        "type": 1
-                    },
-                    {
-                        "id": 25,
-                        "type": 1
-                    },
-                    {
-                        "id": 26,
-                        "type": 1
-                    },
-                    {
-                        "id": 27,
-                        "type": 1
-                    },
-                    {
-                        "id": 28,
-                        "type": 1
-                    },
-                    {
-                        "id": 29,
-                        "type": 1
-                    },
-                    {
-                        "id": 30,
-                        "type": 1
-                    }
-                ],
-                "nextPieceID": 31,
-                "outside": [
-                    [],
-                    []
-                ],
-                "pieces": [
-                    [
-                        {
-                            "id": 1,
-                            "type": 0
-                        },
-                        {
-                            "id": 2,
-                            "type": 0
-                        },
-                        {
-                            "id": 3,
-                            "type": 0
-                        },
-                        {
-                            "id": 4,
-                            "type": 0
-                        },
-                        {
-                            "id": 5,
-                            "type": 0
-                        },
-                        {
-                            "id": 6,
-                            "type": 0
-                        },
-                        {
-                            "id": 7,
-                            "type": 0
-                        },
-                        {
-                            "id": 8,
-                            "type": 0
-                        },
-                        {
-                            "id": 9,
-                            "type": 0
-                        },
-                        {
-                            "id": 10,
-                            "type": 0
-                        },
-                        {
-                            "id": 11,
-                            "type": 0
-                        },
-                        {
-                            "id": 12,
-                            "type": 0
-                        },
-                        {
-                            "id": 13,
-                            "type": 0
-                        },
-                        {
-                            "id": 14,
-                            "type": 0
-                        },
-                        {
-                            "id": 15,
-                            "type": 0
-                        }
-                    ],
-                    [
-                        {
-                            "id": 16,
-                            "type": 1
-                        },
-                        {
-                            "id": 17,
-                            "type": 1
-                        },
-                        {
-                            "id": 18,
-                            "type": 1
-                        },
-                        {
-                            "id": 19,
-                            "type": 1
-                        },
-                        {
-                            "id": 20,
-                            "type": 1
-                        },
-                        {
-                            "id": 21,
-                            "type": 1
-                        },
-                        {
-                            "id": 22,
-                            "type": 1
-                        },
-                        {
-                            "id": 23,
-                            "type": 1
-                        },
-                        {
-                            "id": 24,
-                            "type": 1
-                        },
-                        {
-                            "id": 25,
-                            "type": 1
-                        },
-                        {
-                            "id": 26,
-                            "type": 1
-                        },
-                        {
-                            "id": 27,
-                            "type": 1
-                        },
-                        {
-                            "id": 28,
-                            "type": 1
-                        },
-                        {
-                            "id": 29,
-                            "type": 1
-                        },
-                        {
-                            "id": 30,
-                            "type": 1
-                        }
-                    ]
-                ],
-                "points": [
-                    [
-                        {
-                            "id": 29,
-                            "type": 1
-                        },
-                        {
-                            "id": 30,
-                            "type": 1
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 1,
-                            "type": 0
-                        },
-                        {
-                            "id": 2,
-                            "type": 0
-                        },
-                        {
-                            "id": 3,
-                            "type": 0
-                        },
-                        {
-                            "id": 4,
-                            "type": 0
-                        },
-                        {
-                            "id": 5,
-                            "type": 0
-                        }
-                    ],
-                    [],
-                    [
-                        {
-                            "id": 6,
-                            "type": 0
-                        },
-                        {
-                            "id": 7,
-                            "type": 0
-                        },
-                        {
-                            "id": 8,
-                            "type": 0
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 24,
-                            "type": 1
-                        },
-                        {
-                            "id": 25,
-                            "type": 1
-                        },
-                        {
-                            "id": 26,
-                            "type": 1
-                        },
-                        {
-                            "id": 27,
-                            "type": 1
-                        },
-                        {
-                            "id": 28,
-                            "type": 1
-                        }
-                    ],
-                    [
-                        {
-                            "id": 9,
-                            "type": 0
-                        },
-                        {
-                            "id": 10,
-                            "type": 0
-                        },
-                        {
-                            "id": 11,
-                            "type": 0
-                        },
-                        {
-                            "id": 12,
-                            "type": 0
-                        },
-                        {
-                            "id": 13,
-                            "type": 0
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 21,
-                            "type": 1
-                        },
-                        {
-                            "id": 22,
-                            "type": 1
-                        },
-                        {
-                            "id": 23,
-                            "type": 1
-                        }
-                    ],
-                    [],
-                    [
-                        {
-                            "id": 16,
-                            "type": 1
-                        },
-                        {
-                            "id": 17,
-                            "type": 1
-                        },
-                        {
-                            "id": 18,
-                            "type": 1
-                        },
-                        {
-                            "id": 19,
-                            "type": 1
-                        },
-                        {
-                            "id": 20,
-                            "type": 1
-                        }
-                    ],
-                    [],
-                    [],
-                    [],
-                    [],
-                    [
-                        {
-                            "id": 14,
-                            "type": 0
-                        },
-                        {
-                            "id": 15,
-                            "type": 0
-                        }
-                    ]
-                ],
-                "whiteBar": [],
-                "whiteOutside": [],
-                "whitePieces": [
-                    {
-                        "id": 1,
-                        "type": 0
-                    },
-                    {
-                        "id": 2,
-                        "type": 0
-                    },
-                    {
-                        "id": 3,
-                        "type": 0
-                    },
-                    {
-                        "id": 4,
-                        "type": 0
-                    },
-                    {
-                        "id": 5,
-                        "type": 0
-                    },
-                    {
-                        "id": 6,
-                        "type": 0
-                    },
-                    {
-                        "id": 7,
-                        "type": 0
-                    },
-                    {
-                        "id": 8,
-                        "type": 0
-                    },
-                    {
-                        "id": 9,
-                        "type": 0
-                    },
-                    {
-                        "id": 10,
-                        "type": 0
-                    },
-                    {
-                        "id": 11,
-                        "type": 0
-                    },
-                    {
-                        "id": 12,
-                        "type": 0
-                    },
-                    {
-                        "id": 13,
-                        "type": 0
-                    },
-                    {
-                        "id": 14,
-                        "type": 0
-                    },
-                    {
-                        "id": 15,
-                        "type": 0
-                    }
-                ]
-            },
             "previousTurnDice": {
                 "moves": [
                     5,
@@ -1896,207 +504,17 @@ class Board:
                 ],
                 "blackBar": [],
                 "blackOutside": [],
-                "blackPieces": [
-                    {
-                        "id": 16,
-                        "type": 1
-                    },
-                    {
-                        "id": 17,
-                        "type": 1
-                    },
-                    {
-                        "id": 18,
-                        "type": 1
-                    },
-                    {
-                        "id": 19,
-                        "type": 1
-                    },
-                    {
-                        "id": 20,
-                        "type": 1
-                    },
-                    {
-                        "id": 21,
-                        "type": 1
-                    },
-                    {
-                        "id": 22,
-                        "type": 1
-                    },
-                    {
-                        "id": 23,
-                        "type": 1
-                    },
-                    {
-                        "id": 24,
-                        "type": 1
-                    },
-                    {
-                        "id": 25,
-                        "type": 1
-                    },
-                    {
-                        "id": 26,
-                        "type": 1
-                    },
-                    {
-                        "id": 27,
-                        "type": 1
-                    },
-                    {
-                        "id": 28,
-                        "type": 1
-                    },
-                    {
-                        "id": 29,
-                        "type": 1
-                    },
-                    {
-                        "id": 30,
-                        "type": 1
-                    }
-                ],
                 "nextPieceID": 31,
                 "outside": [
                     [],
                     []
                 ],
-                "pieces": [
-                    [
-                        {
-                            "id": 1,
-                            "type": 0
-                        },
-                        {
-                            "id": 2,
-                            "type": 0
-                        },
-                        {
-                            "id": 3,
-                            "type": 0
-                        },
-                        {
-                            "id": 4,
-                            "type": 0
-                        },
-                        {
-                            "id": 5,
-                            "type": 0
-                        },
-                        {
-                            "id": 6,
-                            "type": 0
-                        },
-                        {
-                            "id": 7,
-                            "type": 0
-                        },
-                        {
-                            "id": 8,
-                            "type": 0
-                        },
-                        {
-                            "id": 9,
-                            "type": 0
-                        },
-                        {
-                            "id": 10,
-                            "type": 0
-                        },
-                        {
-                            "id": 11,
-                            "type": 0
-                        },
-                        {
-                            "id": 12,
-                            "type": 0
-                        },
-                        {
-                            "id": 13,
-                            "type": 0
-                        },
-                        {
-                            "id": 14,
-                            "type": 0
-                        },
-                        {
-                            "id": 15,
-                            "type": 0
-                        }
-                    ],
-                    [
-                        {
-                            "id": 16,
-                            "type": 1
-                        },
-                        {
-                            "id": 17,
-                            "type": 1
-                        },
-                        {
-                            "id": 18,
-                            "type": 1
-                        },
-                        {
-                            "id": 19,
-                            "type": 1
-                        },
-                        {
-                            "id": 20,
-                            "type": 1
-                        },
-                        {
-                            "id": 21,
-                            "type": 1
-                        },
-                        {
-                            "id": 22,
-                            "type": 1
-                        },
-                        {
-                            "id": 23,
-                            "type": 1
-                        },
-                        {
-                            "id": 24,
-                            "type": 1
-                        },
-                        {
-                            "id": 25,
-                            "type": 1
-                        },
-                        {
-                            "id": 26,
-                            "type": 1
-                        },
-                        {
-                            "id": 27,
-                            "type": 1
-                        },
-                        {
-                            "id": 28,
-                            "type": 1
-                        },
-                        {
-                            "id": 29,
-                            "type": 1
-                        },
-                        {
-                            "id": 30,
-                            "type": 1
-                        }
-                    ]
-                ],
                 "points": [
                     [
                         {
-                            "id": 29,
                             "type": 1
                         },
                         {
-                            "id": 30,
                             "type": 1
                         }
                     ],
@@ -2106,42 +524,33 @@ class Board:
                     [],
                     [
                         {
-                            "id": 1,
                             "type": 0
                         },
                         {
-                            "id": 2,
                             "type": 0
                         },
                         {
-                            "id": 3,
                             "type": 0
                         },
                         {
-                            "id": 4,
                             "type": 0
                         },
                         {
-                            "id": 5,
                             "type": 0
                         }
                     ],
                     [],
                     [
                         {
-                            "id": 6,
                             "type": 0
                         },
                         {
-                            "id": 7,
                             "type": 0
                         },
                         {
-                            "id": 8,
                             "type": 0
                         },
                         {
-                            "id": 13,
                             "type": 0
                         }
                     ],
@@ -2150,41 +559,32 @@ class Board:
                     [],
                     [
                         {
-                            "id": 24,
                             "type": 1
                         },
                         {
-                            "id": 25,
                             "type": 1
                         },
                         {
-                            "id": 26,
                             "type": 1
                         },
                         {
-                            "id": 27,
                             "type": 1
                         },
                         {
-                            "id": 28,
                             "type": 1
                         }
                     ],
                     [
                         {
-                            "id": 9,
                             "type": 0
                         },
                         {
-                            "id": 10,
                             "type": 0
                         },
                         {
-                            "id": 11,
                             "type": 0
                         },
                         {
-                            "id": 12,
                             "type": 0
                         }
                     ],
@@ -2193,11 +593,9 @@ class Board:
                     [],
                     [
                         {
-                            "id": 21,
                             "type": 1
                         },
                         {
-                            "id": 22,
                             "type": 1
                         },
                         {
@@ -2244,69 +642,7 @@ class Board:
                     ]
                 ],
                 "whiteBar": [],
-                "whiteOutside": [],
-                "whitePieces": [
-                    {
-                        "id": 1,
-                        "type": 0
-                    },
-                    {
-                        "id": 2,
-                        "type": 0
-                    },
-                    {
-                        "id": 3,
-                        "type": 0
-                    },
-                    {
-                        "id": 4,
-                        "type": 0
-                    },
-                    {
-                        "id": 5,
-                        "type": 0
-                    },
-                    {
-                        "id": 6,
-                        "type": 0
-                    },
-                    {
-                        "id": 7,
-                        "type": 0
-                    },
-                    {
-                        "id": 8,
-                        "type": 0
-                    },
-                    {
-                        "id": 9,
-                        "type": 0
-                    },
-                    {
-                        "id": 10,
-                        "type": 0
-                    },
-                    {
-                        "id": 11,
-                        "type": 0
-                    },
-                    {
-                        "id": 12,
-                        "type": 0
-                    },
-                    {
-                        "id": 13,
-                        "type": 0
-                    },
-                    {
-                        "id": 14,
-                        "type": 0
-                    },
-                    {
-                        "id": 15,
-                        "type": 0
-                    }
-                ]
+                "whiteOutside": []
             },
             "turnConfirmed": false,
             "turnDice": {
@@ -2399,3 +735,19 @@ class Board:
     "steps": 5
 }
     """
+
+    def json_encode_new(self):
+        return """
+        {
+            "type": "eventMatchStart",
+            "state": {
+                "white_bar": 0,
+                "black_bar": 0,
+                "white_removed": 0,
+                "black_removed": 0,
+                "white": [0, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                "black": [0, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]
+            }
+        }
+        """
+

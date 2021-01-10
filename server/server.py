@@ -9,20 +9,29 @@ from game.board import Board
 
 async def handle(websocket, path):
     b = Board()
-    await websocket.send(b.json_encode())
+
+    state = b.state()
+    msg = {
+        "type": "eventMatchStart",
+        "state": state
+    }
+
+    await websocket.send(json.dumps(msg))
     while True:
         r = await websocket.recv()
 
-        payload = json.loads(r)
-        print(payload)
+        #  payload = json.loads(r)
+        #  print(payload)
 
-        if payload["type"] == "rollDice":
-            print("sending roll dice")
-            await websocket.send(b.json_encode_roll())
+        #  if payload["type"] == "rollDice":
+            #  print("sending roll dice")
+            #  json.loads(b.json_encode_roll())
+            #  await websocket.send(b.json_encode_roll())
 
-        if payload["type"] == "movePiece":
-            print("sending move pience")
-            await websocket.send(b.json_encode2())
+        #  if payload["type"] == "movePiece":
+            #  print("sending move pience")
+            #  json.loads(b.json_encode2())
+            #  await websocket.send(b.json_encode2())
 
         # TODO once player moved get the 'AI' to play its turn
         # send eventPieceMove for each move
