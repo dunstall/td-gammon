@@ -8,6 +8,14 @@ from game import board
 
 
 class TestBoard(unittest.TestCase):
+    def test_permitted_moves_one_step(self):
+        b = board.Board()
+        self.assertEqual([(5, 1), (7, 1), (12, 1)], b.permitted_moves([1, 1]))
+
+    def test_permitted_moves_blocked(self):
+        b = board.Board()
+        self.assertEqual([(5, 4), (7, 6)], b.permitted_moves([4, 6]))
+
     def test_move_ok(self):
         b = board.Board()
         self.assertTrue(b.move(5, 2))
