@@ -1,7 +1,7 @@
 # Copyright 2021 Andrew Dunstall
 
-
 import numpy as np
+
 
 class Board:
     _NUM_POINTS = 24
@@ -27,8 +27,8 @@ class Board:
             "black_bar": self._black_bar,
             "white_removed": self._white_removed,
             "black_removed": self._black_removed,
-            "white": self._whites,
-            "black": self._blacks
+            "white": [int(n) for n in self._whites],
+            "black": [int(n) for n in self._blacks]
         }
 
     def encode_state(self, turn):
