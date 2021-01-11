@@ -8,8 +8,6 @@ from game import board
 
 
 class TestBoard(unittest.TestCase):
-    # TODO(AD) Test no other moves allowed until moved from bar
-
     # TODO(AD) Test with different player
 
     def test_move_from_bar_ok(self):

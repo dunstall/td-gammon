@@ -50,7 +50,9 @@ async def handle(websocket, path):
 
             game.move(payload["position"], payload["steps"])
 
-            # TODO(AD) if no permiited moves to next round
+            # If no permitted moves skip to next round.
+            if len(game.permitted_moves()) == 0:
+                game.skip()
 
             msg = game.state()
             msg["type"] = "eventMatchStart"

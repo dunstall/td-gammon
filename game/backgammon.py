@@ -45,3 +45,10 @@ class Backgammon:
             "board": self._board.state(),
             "rolls": self._rolls
         }
+
+    def permitted_moves(self):
+        return self._board.permitted_moves(self._rolls)
+
+    def skip(self):
+        self._rolls = []
+        self._opponent.turn(self._board)
