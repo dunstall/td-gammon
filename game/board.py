@@ -34,6 +34,12 @@ class Board:
     def black_bar(self):
         return self._black_bar
 
+    def white_won(self):
+        return self._white_removed == 15
+
+    def black_won(self):
+        return self._black_removed == 15
+
     # TODO(AD) properties
     def whites(self):
         return self._whites
@@ -55,6 +61,7 @@ class Board:
 
         return permitted
 
+    # TODO(AD) Bearing off - if new_position == 24
     def move(self, position, steps, player=PLAYER_WHITE) -> bool:
         player_points = self._whites if player == PLAYER_WHITE else self._blacks
         opponent_points = self._blacks if player == PLAYER_WHITE else self._whites
@@ -66,6 +73,17 @@ class Board:
             new_position = steps - 1
         else:
             new_position = position + steps
+
+        # Bearing off.
+        if new_position == self._NUM_POINTS:
+            #  print("bearing off")
+            player_points[position] -= 1
+            if player == PLAYER_WHITE:
+                self._white_removed += 1
+            if player == PLAYER_BLACK:
+                self._black_removed += 1
+            return True
+
         n_occupied = opponent_points[self._NUM_POINTS - new_position - 1]
         if n_occupied == 1:
             # Hit
@@ -147,8 +165,12 @@ class Board:
             return False
 
         new_position = position + steps
-        if new_position >= self._NUM_POINTS:
+        # Note may be 24 if bearing off.
+        if new_position > self._NUM_POINTS:
             return False
+
+        if new_position == self._NUM_POINTS:
+            return True
 
         # Point occupied by opponent.
         n_occupied = opponent_points[self._NUM_POINTS - new_position - 1]

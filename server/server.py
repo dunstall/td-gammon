@@ -25,24 +25,18 @@ async def handle(websocket, path):
         r = await websocket.recv()
         payload = json.loads(r)
 
+        print(payload)
+
         if payload["type"] == "rollDice":
             game.roll()
+            print("PLAYER ROLL", game._rolls)
 
             # TODO(AD) if no permiited moves continue to next round
+            # TODO(AD) maybe provide notifications for stuff like this
 
             msg = game.state()
             msg["type"] = "eventMatchStart"
             await websocket.send(json.dumps(msg))
-
-        # TODO(AD) Rules
-        # - Handle case no available moves given the roll
-        #   for this already need to gen list of permitted moves for AI so
-        #   can do this here too - ie if permitted moves empty move on
-        # - If only one move available given the roll must pick highest
-        # - FE not handling middle of board (hit)
-        # - Allow moving from the bar to the board
-        # - Cannot move other checkers until all those on bar removed
-        # - Bearing off
 
         if payload["type"] == "movePiece":
             if payload["position"] == "bar":

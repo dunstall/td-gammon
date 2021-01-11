@@ -22,6 +22,7 @@ class RandomPlayer(Player):
         else:
             rolls = [roll1, roll2]
 
+        print("OPPONENT ROLL", rolls)
         while len(rolls) > 0:
             permitted = board.permitted_moves(rolls, game.board.PLAYER_BLACK)
             if len(permitted) == 0:

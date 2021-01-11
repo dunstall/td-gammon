@@ -17,6 +17,7 @@ class Backgammon:
         return self._board
 
     def move(self, position, steps) -> bool:
+        print("player move", position, steps)
         if steps not in self._rolls:
             return False
 
@@ -27,7 +28,20 @@ class Backgammon:
 
         # If player is out of rolls play the opponents turn.
         if len(self._rolls) == 0:
+
+            if self._board.white_won():
+                print("WHITE WON")
+                raise ValueError("WHITE WON")
+            if self._board.black_won():
+                print("BLACK WON")
+                raise ValueError("BLACK WON")
+
+
             self._opponent.turn(self._board)
+
+            #  self._wait_for_roll = True
+
+
 
         return True
 
@@ -50,5 +64,7 @@ class Backgammon:
         return self._board.permitted_moves(self._rolls)
 
     def skip(self):
+        print("SKIP")
         self._rolls = []
-        self._opponent.turn(self._board)
+        # TODO(AD)
+        #  self._opponent.turn(self._board)
