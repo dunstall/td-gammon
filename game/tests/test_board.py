@@ -8,6 +8,26 @@ from game import board
 
 
 class TestBoard(unittest.TestCase):
+    # TODO(AD) Test no other moves allowed until moved from bar
+
+    # TODO(AD) Test with different player
+
+    def test_move_from_bar_ok(self):
+        b = board.Board()
+        b._whites[5] -= 1
+        b._white_bar += 1
+        self.assertTrue(b.move("bar", 2))
+        self.assertEqual(0, b.white_bar())
+        self.assertEqual(1, b.whites()[1])
+
+    def test_move_from_bar_blocked(self):
+        b = board.Board()
+        b._whites[5] -= 1
+        b._white_bar += 1
+        state = b.state()
+        self.assertFalse(b.move("bar", 1))
+        self.assertEqual(state, b.state())
+
     def test_permitted_moves_one_step(self):
         b = board.Board()
         self.assertEqual([(5, 1), (7, 1), (12, 1)], b.permitted_moves([1, 1]))
@@ -28,6 +48,14 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(b.move(12, 4))
         self.assertEqual(0, b.blacks()[7])
         self.assertEqual(1, b.black_bar())
+
+    def test_move_bar_not_empty(self):
+        b = board.Board()
+        b._whites[5] -= 1
+        b._white_bar += 1
+        state = b.state()
+        self.assertFalse(b.move(5, 2))
+        self.assertEqual(state, b.state())
 
     def test_move_to_occupied_point(self):
         b = board.Board()

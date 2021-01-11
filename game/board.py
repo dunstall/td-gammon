@@ -48,18 +48,24 @@ class Board:
         permitted = []
         for steps in rolls:
            for position in range(24):
-               if self._move_permitted(position, steps):
+               if self._move_permitted(position, steps, player):
                    permitted.append((position, steps))
+           if self._move_permitted("bar", steps, player):
+               permitted.append(("bar", steps))
+
         return permitted
 
     def move(self, position, steps, player=PLAYER_WHITE) -> bool:
         player_points = self._whites if player == PLAYER_WHITE else self._blacks
         opponent_points = self._blacks if player == PLAYER_WHITE else self._whites
 
-        if not self._move_permitted(position, steps):
+        if not self._move_permitted(position, steps, player):
             return False
 
-        new_position = position + steps
+        if position == "bar":
+            new_position = steps - 1
+        else:
+            new_position = position + steps
         n_occupied = opponent_points[self._NUM_POINTS - new_position - 1]
         if n_occupied == 1:
             # Hit
@@ -69,8 +75,16 @@ class Board:
             else:
                  self._white_bar += 1
 
-        player_points[position] -= 1
-        player_points[position + steps] += 1
+        if position == "bar":
+            player_points[new_position] += 1
+            if player == PLAYER_WHITE:
+                self._white_bar -= 1
+            if player == PLAYER_BLACK:
+                self._black_bar -= 1
+
+        else:
+            player_points[position] -= 1
+            player_points[position + steps] += 1
         return True
 
     def state(self):
@@ -103,12 +117,33 @@ class Board:
 
         return state
 
-    def _move_permitted(self, position, steps) -> bool:
-        # No checkers to move at this position.
-        if self._whites[position] == 0:
-            return False
+    def _move_permitted(self, position, steps, player) -> bool:
+        player_points = self._whites if player == PLAYER_WHITE else self._blacks
+        opponent_points = self._blacks if player == PLAYER_WHITE else self._whites
 
         if steps < self._MIN_MOVE or steps > self._MAX_MOVE:
+            return False
+
+        if position == "bar":
+            if player == PLAYER_WHITE and self._white_bar == 0:
+                return False
+            if player == PLAYER_BLACK and self._black_bar == 0:
+                return False
+
+            new_position = steps - 1
+            n_occupied = opponent_points[self._NUM_POINTS - new_position - 1]
+            if n_occupied >= 2:
+                return False
+
+            return True
+
+        if player == PLAYER_WHITE and self._white_bar != 0:
+            return False
+        if player == PLAYER_BLACK and self._black_bar != 0:
+            return False
+
+        # No checkers to move at this position.
+        if player_points[position] == 0:
             return False
 
         new_position = position + steps
@@ -116,7 +151,7 @@ class Board:
             return False
 
         # Point occupied by opponent.
-        n_occupied = self._blacks[self._NUM_POINTS - new_position - 1]
+        n_occupied = opponent_points[self._NUM_POINTS - new_position - 1]
         if n_occupied >= 2:
             return False
 

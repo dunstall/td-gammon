@@ -6,7 +6,6 @@ from game.board import Board
 from game.player import Player
 
 
-# TODO(AD) State machine?
 class Backgammon:
     def __init__(self, opponent):
         self._opponent = opponent
@@ -26,12 +25,9 @@ class Backgammon:
 
         del self._rolls[self._rolls.index(steps)]
 
-        # TODO if rolls empty then run player.turn(board) to get
-        # move
-
+        # If player is out of rolls play the opponents turn.
         if len(self._rolls) == 0:
             self._opponent.turn(self._board)
-
 
         return True
 

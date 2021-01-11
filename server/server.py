@@ -34,10 +34,6 @@ async def handle(websocket, path):
             msg["type"] = "eventMatchStart"
             await websocket.send(json.dumps(msg))
 
-        # TODO(AD)
-        # 5 Send updated state (after AI move too)  SEND
-        # 6 Repeat.
-
         # TODO(AD) Rules
         # - Handle case no available moves given the roll
         #   for this already need to gen list of permitted moves for AI so
@@ -49,11 +45,12 @@ async def handle(websocket, path):
         # - Bearing off
 
         if payload["type"] == "movePiece":
+            if payload["position"] == "bar":
+                print("MOVE BAR REQ")
+
             game.move(payload["position"], payload["steps"])
 
             # TODO(AD) if no permiited moves to next round
-
-            # TODO(AD) If rolls empty let AI play its move
 
             msg = game.state()
             msg["type"] = "eventMatchStart"
