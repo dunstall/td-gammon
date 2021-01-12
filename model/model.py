@@ -4,7 +4,7 @@ import random
 
 import numpy as np
 
-from game.backgammon import Backgammon2
+from game.backgammon import Backgammon
 from game.td_gammon_player import TDGammonPlayer
 
 
@@ -14,7 +14,7 @@ class Model:
 
     async def train(self, n_episodes=10):
         for episode in range(n_episodes):
-            game = Backgammon2(TDGammonPlayer(self), TDGammonPlayer(self))
+            game = Backgammon(TDGammonPlayer(self), TDGammonPlayer(self))
             await game.play()
 
     def action(self, board, roll):

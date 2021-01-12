@@ -16,6 +16,6 @@ class TDGammonPlayer(game.player.Player):
             if move is None:
                 return
 
-            board.move(move)
+            board.move(*move)
                 
             # remove roll used

@@ -4,8 +4,8 @@ import argparse
 import asyncio
 import logging
 
-from server.server import Server
 from model.model import Model
+from server.server import Server
 
 
 ACTION_TRAIN = "train"
