@@ -5,7 +5,7 @@ import asyncio
 import logging
 
 from server.server import Server
-from ai.model import Model
+from model.model import Model
 
 
 ACTION_TRAIN = "train"
