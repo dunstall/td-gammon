@@ -7,6 +7,7 @@ PLAYER_WHITE = 0
 PLAYER_BLACK = 1
 
 
+# TODO(AD) Properly unittest and rewrite this
 class Board:
     _NUM_POINTS = 24
     _STATE_SIZE = 198

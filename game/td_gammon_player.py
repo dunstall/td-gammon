@@ -8,6 +8,8 @@ class TDGammonPlayer(game.player.Player):
         self._model = model
 
     async def turn(self, board):
+        # TODO add _roll to Player superclass
+
         print("TURN")
         roll = [1, 2]
 
