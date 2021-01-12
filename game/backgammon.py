@@ -5,6 +5,7 @@ from game.board import Board
 
 class Backgammon:
     def __init__(self, player1, player2):
+        # TODO(AD) Rotate randomly
         self._player1 = player1
         self._player2 = player2
 

@@ -1,5 +1,7 @@
 # Copyright 2021 Andrew Dunstall
 
+import logging
+
 from game.board import PLAYER_BLACK, PLAYER_WHITE
 from game.player import Player
 
@@ -21,7 +23,9 @@ class TDGammonPlayer(Player):
             if move is None:
                 return
 
-            board.move(*move, self._color)
+            if not board.move(*move, self._color):
+                logging.error("td-gammon player requested invalid move")
+                continue
 
             del roll[roll.index(move[1])]
 

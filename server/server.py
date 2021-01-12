@@ -6,6 +6,7 @@ import logging
 import websockets
 
 from game.backgammon import Backgammon
+from game.board import PLAYER_BLACK, PLAYER_WHITE
 from game.td_gammon_player import TDGammonPlayer
 from server.websocket_player import WebSocketPlayer
 
@@ -16,9 +17,9 @@ class Server:
 
     async def handle(self, websocket, _path):
         logging.info("handle new game")
-        player = WebSocketPlayer(websocket)
+        player = WebSocketPlayer(websocket, PLAYER_WHITE)
 
-        game = Backgammon(player, TDGammonPlayer(self._model))
+        game = Backgammon(player, TDGammonPlayer(self._model, PLAYER_WHITE))
         await game.play()
 
     def run(self):

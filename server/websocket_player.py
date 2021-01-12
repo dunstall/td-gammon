@@ -1,30 +1,49 @@
 # Copyright 2021 Andrew Dunstall
 
 import json
+import logging
 
 from game.player import Player
 
 
 class WebSocketPlayer(Player):
-    def __init__(self, websocket):
+    def __init__(self, websocket, color):
         self._websocket = websocket
+        self._color = color
 
     async def turn(self, board):
-        await self._send_state(board)
+        roll = self._roll()
 
         while True:
+            await self._send_state(board, roll)
+
+            if len(roll) == 0:
+                return
+
             msg = await self._websocket.recv()
             payload = json.loads(msg)
 
-            # TODO(AD) Handle inputs (state machine of not rolled,
-            # moves remaining, done...)
+            if "position" not in payload or "steps" not in payload:
+                logging.info("invalid request payload")
+                continue
 
-        rolls = []
-        await self._send_state(board, rolls)
+            if not board.move(payload["position"], payload["steps"], self._color):
+                logging.info("websocket player requested invalid move")
+                continue
 
-    async def _send_state(self, board, rolls=None):
+            del roll[roll.index(payload["steps"])]
+
+    def won(self):
+        # TODO(AD) Send to player
+        print("won", self._color)
+
+    def lost(self):
+        # TODO(AD) Send to player
+        print("lost", self._color)
+
+    async def _send_state(self, board, roll):
         state = {
             "board": board.state(),
-            "rolls": rolls
+            "roll": roll
         }
         await self._websocket.send(json.dumps(state))

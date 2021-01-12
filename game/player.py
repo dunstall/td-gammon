@@ -9,6 +9,14 @@ class Player(abc.ABC):
     async def turn(self, board):
         pass
 
+    @abc.abstractmethod
+    def won(self):
+        pass
+
+    @abc.abstractmethod
+    def lost(self):
+        pass
+
     def _roll(self):
         roll1 = random.randint(1, 6)
         roll2 = random.randint(1, 6)
