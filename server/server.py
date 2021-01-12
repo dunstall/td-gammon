@@ -19,7 +19,7 @@ class Server:
         logging.info("handle new game")
         player = WebSocketPlayer(websocket, PLAYER_WHITE)
 
-        game = Backgammon(player, TDGammonPlayer(self._model, PLAYER_WHITE))
+        game = Backgammon(player, TDGammonPlayer(self._model, PLAYER_BLACK))
         await game.play()
 
     def run(self):
