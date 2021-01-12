@@ -7,10 +7,24 @@ from game.player import Player
 
 
 class Backgammon:
+    def __init__(self, player1, player2):
+        self._player1 = player1
+        self._player2 = player2
+
+        self._board = Board()
+
+    async def play(self):
+        while True:
+            await self._player1.turn(self._board)
+            await self._player2.turn(self._board)
+
+
+class BackgammonOld:
     def __init__(self, opponent):
         self._opponent = opponent
 
         self._board = Board()
+        # TODO maintain both players rolls and send to client
         self._rolls = []
 
     def board(self):

@@ -4,7 +4,7 @@ import argparse
 import asyncio
 import logging
 
-from server.server import run_server
+from server.server import Server
 from ai.model import Model
 
 
@@ -27,7 +27,8 @@ def main(args):
     if args.action == ACTION_TRAIN:
         asyncio.run(m.train())
     elif args.action == ACTION_SERVE:
-        run_server()
+        s = Server(m)
+        s.run()
 
 
 if __name__ == "__main__":
