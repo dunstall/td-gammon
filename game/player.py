@@ -14,6 +14,5 @@ class Player(abc.ABC):
         roll2 = random.randint(1, 6)
         if roll1 == roll2:
             # Doubles.
-            self._rolls = [roll1] * 4
-        else:
-            self._rolls = [roll1, roll2]
+            return [roll1] * 4
+        return [roll1, roll2]

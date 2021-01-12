@@ -13,4 +13,14 @@ class Backgammon:
     async def play(self):
         while True:
             await self._player1.turn(self._board)
+            # TODO(AD) Rename white/black player1/player1
+            if self._board.white_won():
+                self._player1.won()
+                self._player2.lost()
+                return
+
             await self._player2.turn(self._board)
+            if self._board.black_won():
+                self._player1.lost()
+                self._player2.won()
+                return
