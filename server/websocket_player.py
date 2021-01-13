@@ -20,9 +20,9 @@ class WebSocketPlayer(Player):
             if len(roll) == 0:
                 return
 
-            permitted = board.permitted_moves(roll, self._)
+            permitted = board.permitted_moves(roll, self._color)
             if len(permitted) == 0:
-                return None
+                return
 
             msg = await self._websocket.recv()
             payload = json.loads(msg)
