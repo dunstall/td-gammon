@@ -12,10 +12,14 @@ class Game:
         self._agents = [agent1, agent2]
         self._board = Board()
 
+    def won(self, player):
+        return self._board.won(player)
+
     async def play(self):
         start = time.time()
 
         turn = random.randint(0, 1)
+        logging.debug(f"game started [player = {turn}]")
         while not self._board.won(turn):
             turn = 1 - turn
 

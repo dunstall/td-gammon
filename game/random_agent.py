@@ -1,13 +1,13 @@
 # Copyright 2021 Andrew Dunstall
 
+import random
 import logging
 
 from game.agent import Agent
 
 
-class TDGammonAgent(Agent):
-    def __init__(self, model, player):
-        self._model = model
+class RandomAgent(Agent):
+    def __init__(self, player):
         self._player = player
 
     async def turn(self, board):
@@ -17,11 +17,11 @@ class TDGammonAgent(Agent):
             if len(roll) == 0:
                 return
 
-            move = self._model.action(board, roll, self._player)
-            # When no moves remaining end the turn.
-            if move is None:
+            permitted = board.permitted_moves(roll, self._player)
+            if len(permitted) == 0:
                 return
 
+            move = random.choice(permitted)
             if not board.move(*move, self._player):
                 logging.error("td-gammon player requested invalid move")
                 continue
@@ -29,4 +29,4 @@ class TDGammonAgent(Agent):
             del roll[roll.index(move[1])]
 
     def update(self, board):
-        self._model.update(board, self._player)
+        pass

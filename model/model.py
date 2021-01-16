@@ -8,8 +8,8 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from game.board import PLAYER_O, PLAYER_X
 from game.game import Game
+from game.random_agent import RandomAgent
 from model.td_gammon_agent import TDGammonAgent
 
 
@@ -30,11 +30,26 @@ class Model:
 
     async def train(self, n_episodes=1):
         for episode in range(n_episodes):
+            player = random.randint(0, 1)
             game = Game(
-                TDGammonAgent(self, PLAYER_X),
-                TDGammonAgent(self, PLAYER_O)
+                TDGammonAgent(self, player),
+                TDGammonAgent(self, 1 - player)
             )
             await game.play()
+
+    async def test(self, n_episodes=100):
+        wins = 0
+        for episode in range(1, n_episodes + 1):
+            player = random.randint(0, 1)
+            game = Game(
+                TDGammonAgent(self, player),
+                RandomAgent(1 - player)
+            )
+            await game.play()
+
+            if game.won(player):
+                wins += 1
+            logging.info(f"game complete [model wins {wins}] [episodes {episode}]")
 
     def action(self, board, roll, player):
         max_move = None

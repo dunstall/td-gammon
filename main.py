@@ -11,6 +11,9 @@ from server.server import Server
 def parse_args():
     parser = argparse.ArgumentParser(description="TD-Gammon model.")
     parser.add_argument(
+        "--test", action='store_true', help="test model"
+    )
+    parser.add_argument(
         "--serve", action='store_true', help="run websocket server"
     )
     parser.add_argument(
@@ -25,6 +28,8 @@ def main(args):
     m = Model()
     if args.serve:
         s = Server(m).listen()
+    if args.test:
+        asyncio.run(m.test())
     else:
         asyncio.run(m.train())
 
