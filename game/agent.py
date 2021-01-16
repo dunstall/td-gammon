@@ -6,7 +6,7 @@ import random
 
 class Agent(abc.ABC):
     @abc.abstractmethod
-    async def turn(self, board):
+    def turn(self, board):
         pass
 
     @abc.abstractmethod

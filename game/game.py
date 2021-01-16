@@ -15,16 +15,18 @@ class Game:
     def won(self, player):
         return self._board.won(player)
 
-    async def play(self):
+    def play(self):
         start = time.time()
 
         turn = random.randint(0, 1)
         logging.debug(f"game started [player = {turn}]")
+        steps = 0
         while not self._board.won(turn):
             turn = 1 - turn
 
-            await self._agents[turn].turn(self._board)
+            self._agents[turn].turn(self._board)
             self._agents[turn].update(self._board)
+            steps += 1
 
         duration = time.time() - start
-        logging.debug(f"game complete [duration = {duration}s], [winner = {turn}]")
+        logging.info(f"game complete [duration = {duration}s], [winner = {turn}] [steps = {steps}]")

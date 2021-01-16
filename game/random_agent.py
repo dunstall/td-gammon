@@ -10,7 +10,7 @@ class RandomAgent(Agent):
     def __init__(self, player):
         self._player = player
 
-    async def turn(self, board):
+    def turn(self, board):
         roll = self._roll()
 
         while True:

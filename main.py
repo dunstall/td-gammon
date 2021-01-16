@@ -28,10 +28,11 @@ def main(args):
     m = Model()
     if args.serve:
         s = Server(m).listen()
-    if args.test:
-        asyncio.run(m.test())
+    #  elif args.test:
+        #  asyncio.run(m.test())
     else:
-        asyncio.run(m.train())
+        m.train()
+        #  asyncio.run(m.train())
 
 
 if __name__ == "__main__":

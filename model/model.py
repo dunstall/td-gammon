@@ -28,15 +28,20 @@ class Model:
         self._x = None
         self._V = None
 
-    async def train(self, n_episodes=1):
+    def train(self, n_episodes=5000):
+        logging.info(f"training model [n_episodes = {n_episodes}]")
         wins = [0, 0]
+        n_validation = 500
         for episode in range(1, n_episodes + 1):
+            if episode % n_validation == 0:
+                self.test()
+
             player = random.randint(0, 1)
             game = Game(
                 TDGammonAgent(self, player),
                 TDGammonAgent(self, 1 - player)
             )
-            await game.play()
+            game.play()
 
             if game.won(player):
                 wins[player] += 1
@@ -44,7 +49,8 @@ class Model:
                 wins[1 - player] += 1
             logging.info(f"game complete [wins {wins}] [episodes {episode}]")
 
-    async def test(self, n_episodes=100):
+    def test(self, n_episodes=100):
+        logging.info(f"testing model [n_episodes = {n_episodes}]")
         wins = 0
         for episode in range(1, n_episodes + 1):
             player = random.randint(0, 1)
@@ -53,7 +59,7 @@ class Model:
                 TDGammonAgent(self, player),
                 RandomAgent(1 - player)
             )
-            await game.play()
+            game.play()
 
             if game.won(player):
                 wins += 1
@@ -63,12 +69,15 @@ class Model:
         max_move = None
         max_prob = -np.inf
         start = time.time()
-        for move in board.permitted_moves(roll, player):
+        permitted = board.permitted_moves(roll, player)
+        for move in permitted:
             afterstate = copy.deepcopy(board)
             if not afterstate.move(*move, player):
                 logging.error("model requested an invalid move")
                 continue
-            prob = self._model.predict(afterstate.encode_state(player)[np.newaxis])[0][0]
+
+            state = afterstate.encode_state(player)[np.newaxis]
+            prob = tf.reduce_sum(self._model(state))
             if prob > max_prob:
                 max_prob = prob
                 max_move = move
