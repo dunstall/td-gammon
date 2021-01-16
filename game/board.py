@@ -48,7 +48,7 @@ class Board:
     def o_points(self):
         return self._o_points
 
-    def permitted_moves(self, rolls, player=PLAYER_X):
+    def permitted_moves(self, rolls, player):
         # Ensure rolls unique.
         rolls = list(set(rolls))
 
@@ -62,7 +62,7 @@ class Board:
 
         return permitted
 
-    def move(self, position, steps, player=PLAYER_X) -> bool:
+    def move(self, position, steps, player) -> bool:
         player_points = self._x_points if player == PLAYER_X else self._o_points
         opponent_points = self._o_points if player == PLAYER_X else self._x_points
 

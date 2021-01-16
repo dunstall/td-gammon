@@ -29,7 +29,8 @@ class Model:
         self._V = None
 
     async def train(self, n_episodes=1):
-        for episode in range(n_episodes):
+        wins = [0, 0]
+        for episode in range(1, n_episodes + 1):
             player = random.randint(0, 1)
             game = Game(
                 TDGammonAgent(self, player),
@@ -37,11 +38,18 @@ class Model:
             )
             await game.play()
 
+            if game.won(player):
+                wins[player] += 1
+            else:
+                wins[1 - player] += 1
+            logging.info(f"game complete [wins {wins}] [episodes {episode}]")
+
     async def test(self, n_episodes=100):
         wins = 0
         for episode in range(1, n_episodes + 1):
             player = random.randint(0, 1)
             game = Game(
+                # TODO(AD) Disable training?
                 TDGammonAgent(self, player),
                 RandomAgent(1 - player)
             )
@@ -56,7 +64,6 @@ class Model:
         max_prob = -np.inf
         start = time.time()
         for move in board.permitted_moves(roll, player):
-            # TODO(AD) Very inefficient - use apply and undo
             afterstate = copy.deepcopy(board)
             if not afterstate.move(*move, player):
                 logging.error("model requested an invalid move")
