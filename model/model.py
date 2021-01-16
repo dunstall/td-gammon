@@ -7,9 +7,9 @@ import random
 import numpy as np
 import tensorflow as tf
 
-from game.backgammon import Backgammon
-from game.board import PLAYER_BLACK, PLAYER_WHITE
-from game.td_gammon_player import TDGammonPlayer
+from game.board import PLAYER_O, PLAYER_X
+from game.game import Game
+from model.td_gammon_agent import TDGammonAgent
 
 
 class Model:
@@ -21,9 +21,9 @@ class Model:
 
     async def train(self, n_episodes=1):
         for episode in range(n_episodes):
-            game = Backgammon(
-                TDGammonPlayer(self, PLAYER_WHITE),
-                TDGammonPlayer(self, PLAYER_BLACK)
+            game = Game(
+                TDGammonAgent(self, PLAYER_X),
+                TDGammonAgent(self, PLAYER_O)
             )
             await game.play()
 

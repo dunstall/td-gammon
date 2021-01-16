@@ -8,14 +8,10 @@ from model.model import Model
 from server.server import Server
 
 
-ACTION_TRAIN = "train"
-ACTION_SERVE = "serve"
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description="TD-Gammon model.")
     parser.add_argument(
-        "action", choices=[ACTION_TRAIN, ACTION_SERVE], help="TD-Gammon action"
+        "--serve", action='store_true', help="run websocket server"
     )
     return parser.parse_args()
 
@@ -24,11 +20,10 @@ def main(args):
     logging.basicConfig(level=logging.INFO)
 
     m = Model()
-    if args.action == ACTION_TRAIN:
+    if args.serve:
+        s = Server(m).listen()
+    else:
         asyncio.run(m.train())
-    elif args.action == ACTION_SERVE:
-        s = Server(m)
-        s.run()
 
 
 if __name__ == "__main__":

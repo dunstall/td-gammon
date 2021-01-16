@@ -4,7 +4,7 @@ import abc
 import random
 
 
-class Player(abc.ABC):
+class Agent(abc.ABC):
     @abc.abstractmethod
     async def turn(self, board):
         pass

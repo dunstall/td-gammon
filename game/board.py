@@ -3,69 +3,68 @@
 import numpy as np
 
 
-PLAYER_WHITE = 0
-PLAYER_BLACK = 1
+PLAYER_X = 0
+PLAYER_O = 1
 
 
-# TODO(AD) Properly unittest and rewrite this
 class Board:
     _NUM_POINTS = 24
     _STATE_SIZE = 198
+    _NUM_CHECKERS = 15
 
     _MIN_MOVE = 1
     _MAX_MOVE = 6
 
     def __init__(self):
-        self._whites = np.array([
+        self._x_points = np.array([
             0, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 0,
             5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
         ])
-        self._blacks = np.array([
+        self._o_points = np.array([
             0, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 0,
             5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2
         ])
-        self._white_bar = 0
-        self._black_bar = 0
-        self._white_removed = 0
-        self._black_removed = 0
+        self._x_bar = 0
+        self._o_bar = 0
+        self._x_removed = 0
+        self._o_removed = 0
 
-    def white_bar(self):
-        return self._white_bar
+    def x_bar(self):
+        return self._x_bar
 
-    def black_bar(self):
-        return self._black_bar
+    def o_bar(self):
+        return self._o_bar
 
-    def white_won(self):
-        return self._white_removed == 15
+    def won(self, player):
+        if player == PLAYER_X:
+            return self._x_removed == self._NUM_CHECKERS
+        if player == PLAYER_O:
+            return self._o_removed == self._NUM_CHECKERS
+        return False
 
-    def black_won(self):
-        return self._black_removed == 15
+    def x_points(self):
+        return self._x_points
 
-    # TODO(AD) properties
-    def whites(self):
-        return self._whites
+    def o_points(self):
+        return self._o_points
 
-    def blacks(self):
-        return self._blacks
-
-    def permitted_moves(self, rolls, player=PLAYER_WHITE):
+    def permitted_moves(self, rolls, player=PLAYER_X):
         # Ensure rolls unique.
         rolls = list(set(rolls))
 
         permitted = []
         for steps in rolls:
-           for position in range(24):
-               if self._move_permitted(position, steps, player):
-                   permitted.append((position, steps))
-           if self._move_permitted("bar", steps, player):
-               permitted.append(("bar", steps))
+            for position in range(24):
+                if self._move_permitted(position, steps, player):
+                    permitted.append((position, steps))
+            if self._move_permitted("bar", steps, player):
+                permitted.append(("bar", steps))
 
         return permitted
 
-    # TODO(AD) Bearing off - if new_position == 24
-    def move(self, position, steps, player=PLAYER_WHITE) -> bool:
-        player_points = self._whites if player == PLAYER_WHITE else self._blacks
-        opponent_points = self._blacks if player == PLAYER_WHITE else self._whites
+    def move(self, position, steps, player=PLAYER_X) -> bool:
+        player_points = self._x_points if player == PLAYER_X else self._o_points
+        opponent_points = self._o_points if player == PLAYER_X else self._x_points
 
         if not self._move_permitted(position, steps, player):
             return False
@@ -77,29 +76,28 @@ class Board:
 
         # Bearing off.
         if new_position == self._NUM_POINTS:
-            #  print("bearing off")
             player_points[position] -= 1
-            if player == PLAYER_WHITE:
-                self._white_removed += 1
-            if player == PLAYER_BLACK:
-                self._black_removed += 1
+            if player == PLAYER_X:
+                self._x_removed += 1
+            if player == PLAYER_O:
+                self._o_removed += 1
             return True
 
         n_occupied = opponent_points[self._NUM_POINTS - new_position - 1]
         if n_occupied == 1:
             # Hit
             opponent_points[self._NUM_POINTS - new_position - 1] = 0
-            if player == PLAYER_WHITE:
-                 self._black_bar += 1
+            if player == PLAYER_X:
+                self._o_bar += 1
             else:
-                 self._white_bar += 1
+                self._x_bar += 1
 
         if position == "bar":
             player_points[new_position] += 1
-            if player == PLAYER_WHITE:
-                self._white_bar -= 1
-            if player == PLAYER_BLACK:
-                self._black_bar -= 1
+            if player == PLAYER_X:
+                self._x_bar -= 1
+            if player == PLAYER_O:
+                self._o_bar -= 1
 
         else:
             player_points[position] -= 1
@@ -108,12 +106,12 @@ class Board:
 
     def state(self):
         return {
-            "white_bar": self._white_bar,
-            "black_bar": self._black_bar,
-            "white_removed": self._white_removed,
-            "black_removed": self._black_removed,
-            "white": [int(n) for n in self._whites],
-            "black": [int(n) for n in self._blacks]
+            "x_bar": self._x_bar,
+            "o_bar": self._o_bar,
+            "x_removed": self._x_removed,
+            "o_removed": self._o_removed,
+            "x_points": [int(n) for n in self._x_points],
+            "o_points": [int(n) for n in self._o_points]
         }
 
     def encode_state(self, turn):
@@ -121,32 +119,32 @@ class Board:
 
         for point in range(self._NUM_POINTS):
             index = point * 4
-            state[index:index+4] = encode_point(self._whites[point])
+            state[index:index+4] = encode_point(self._x_points[point])
 
         for point in range(self._NUM_POINTS):
             index = (point + 24) * 4
-            state[index:index+4] = encode_point(self._blacks[point])
+            state[index:index+4] = encode_point(self._o_points[point])
 
-        state[192] = self._white_bar / 2
-        state[193] = self._black_bar / 2
-        state[194] = self._white_removed / 15
-        state[195] = self._black_removed / 15
+        state[192] = self._x_bar / 2
+        state[193] = self._o_bar / 2
+        state[194] = self._x_removed / self._NUM_CHECKERS
+        state[195] = self._o_removed / self._NUM_CHECKERS
         state[196] = 1 - turn
         state[197] = turn
 
         return state
 
     def _move_permitted(self, position, steps, player) -> bool:
-        player_points = self._whites if player == PLAYER_WHITE else self._blacks
-        opponent_points = self._blacks if player == PLAYER_WHITE else self._whites
+        player_points = self._x_points if player == PLAYER_X else self._o_points
+        opponent_points = self._o_points if player == PLAYER_X else self._x_points
 
         if steps < self._MIN_MOVE or steps > self._MAX_MOVE:
             return False
 
         if position == "bar":
-            if player == PLAYER_WHITE and self._white_bar == 0:
+            if player == PLAYER_X and self._x_bar == 0:
                 return False
-            if player == PLAYER_BLACK and self._black_bar == 0:
+            if player == PLAYER_O and self._o_bar == 0:
                 return False
 
             new_position = steps - 1
@@ -156,9 +154,9 @@ class Board:
 
             return True
 
-        if player == PLAYER_WHITE and self._white_bar != 0:
+        if player == PLAYER_X and self._x_bar != 0:
             return False
-        if player == PLAYER_BLACK and self._black_bar != 0:
+        if player == PLAYER_O and self._o_bar != 0:
             return False
 
         # No checkers to move at this position.

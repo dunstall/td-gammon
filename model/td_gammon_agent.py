@@ -2,11 +2,11 @@
 
 import logging
 
-from game.board import PLAYER_BLACK, PLAYER_WHITE
-from game.player import Player
+from game.agent import Agent
+from game.board import PLAYER_O, PLAYER_X
 
 
-class TDGammonPlayer(Player):
+class TDGammonAgent(Agent):
     def __init__(self, model, color):
         self._model = model
         self._color = color

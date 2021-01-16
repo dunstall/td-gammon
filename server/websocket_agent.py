@@ -3,10 +3,10 @@
 import json
 import logging
 
-from game.player import Player
+from game.agent import Agent
 
 
-class WebSocketPlayer(Player):
+class WebSocketAgent(Agent):
     def __init__(self, websocket, color):
         self._websocket = websocket
         self._color = color
