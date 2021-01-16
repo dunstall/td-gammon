@@ -13,11 +13,14 @@ def parse_args():
     parser.add_argument(
         "--serve", action='store_true', help="run websocket server"
     )
+    parser.add_argument(
+        "--debug", action='store_true', help="debug logging"
+    )
     return parser.parse_args()
 
 
 def main(args):
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
 
     m = Model()
     if args.serve:

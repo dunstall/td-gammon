@@ -7,9 +7,9 @@ from game.board import PLAYER_O, PLAYER_X
 
 
 class TDGammonAgent(Agent):
-    def __init__(self, model, color):
+    def __init__(self, model, player):
         self._model = model
-        self._color = color
+        self._player = player
 
     async def turn(self, board):
         roll = self._roll()
@@ -18,21 +18,16 @@ class TDGammonAgent(Agent):
             if len(roll) == 0:
                 return
 
-            move = self._model.action(board, roll, self._color)
+            move = self._model.action(board, roll, self._player)
             # When no moves remaining end the turn.
             if move is None:
                 return
 
-            if not board.move(*move, self._color):
+            if not board.move(*move, self._player):
                 logging.error("td-gammon player requested invalid move")
                 continue
 
             del roll[roll.index(move[1])]
 
-    def won(self):
-        # TODO(AD) Update model
-        print("won", self._color)
-
-    def lost(self):
-        # TODO(AD) Update model
-        print("lost", self._color)
+    def update(self, board):
+        self._model.update(board, self._player)

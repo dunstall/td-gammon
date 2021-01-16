@@ -3,6 +3,7 @@
 import copy
 import logging
 import random
+import time
 
 import numpy as np
 import tensorflow as tf
@@ -19,6 +20,14 @@ class Model:
         outputs = tf.keras.layers.Dense(1, activation="sigmoid")(x)
         self._model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
+        self._trace = []
+        # TODO(AD) Decay
+        self._lambda = 0.9
+        self._alpha = 0.1
+
+        self._x = None
+        self._V = None
+
     async def train(self, n_episodes=1):
         for episode in range(n_episodes):
             game = Game(
@@ -27,20 +36,57 @@ class Model:
             )
             await game.play()
 
-    def action(self, board, roll, color):
+    def action(self, board, roll, player):
         max_move = None
         max_prob = -np.inf
-        for move in board.permitted_moves(roll, color):
-            # TODO(AD) Very inefficient
-            board_afterstate = copy.deepcopy(board)
-            if not board_afterstate.move(*move, color):
+        start = time.time()
+        for move in board.permitted_moves(roll, player):
+            # TODO(AD) Very inefficient - use apply and undo
+            afterstate = copy.deepcopy(board)
+            if not afterstate.move(*move, player):
                 logging.error("model requested an invalid move")
                 continue
-            prob = self._model.predict(board_afterstate.encode_state(color)[np.newaxis])[0][0]
-
+            prob = self._model.predict(afterstate.encode_state(player)[np.newaxis])[0][0]
             if prob > max_prob:
                 max_prob = prob
                 max_move = move
 
-        print(color, "playing move", max_move, "prob:", max_prob)
+        if self._x is None:
+            self._x = board.encode_state(player)
+        if self._V is None:
+            self._V = self._model(self._x[np.newaxis])
+
+        duration = time.time() - start
+        logging.debug(f"playing move [player = {player}] [move = {max_move}] [winning prob = {max_prob}] [duration = {duration}s]")
         return max_move
+
+    def update(self, board, player):
+        start = time.time()
+        x_next = board.encode_state(player)
+
+        with tf.GradientTape() as tape:
+            V_next = self._model(x_next[np.newaxis])
+
+        tvars = self._model.trainable_variables
+        grads = tape.gradient(V_next, tvars)
+
+        if len(self._trace) == 0:
+            for grad in grads:
+                self._trace.append(tf.Variable(
+                    tf.zeros(grad.get_shape()), trainable=False
+                ))
+
+        reward = 1 if board.won(player) else 0
+
+        delta = tf.reduce_sum(reward + V_next - self._V)
+        for i in range(len(grads)):
+            self._trace[i].assign((self._lambda * self._trace[i]) + grads[i])
+
+            grad_trace = self._alpha * delta * self._trace[i]
+            self._model.trainable_variables[i].assign_add(grad_trace)
+
+        self._x = x_next
+        self._V = V_next
+
+        duration = time.time() - start
+        logging.debug(f"updating model [player = {player}] [duration = {duration}s]")

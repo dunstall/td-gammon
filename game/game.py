@@ -2,6 +2,7 @@
 
 import logging
 import random
+import time
 
 from game.board import Board
 
@@ -12,10 +13,14 @@ class Game:
         self._board = Board()
 
     async def play(self):
+        start = time.time()
+
         turn = random.randint(0, 1)
         while not self._board.won(turn):
             turn = 1 - turn
-            await self._agents[turn].turn(self._board)
 
-        self._agents[turn].won()
-        self._agents[1 - turn].lost()
+            await self._agents[turn].turn(self._board)
+            self._agents[turn].update(self._board)
+
+        duration = time.time() - start
+        logging.debug(f"game complete [duration = {duration}s], [winner = {turn}]")

@@ -37,13 +37,8 @@ class WebSocketAgent(Agent):
 
             del roll[roll.index(payload["steps"])]
 
-    def won(self):
-        # TODO(AD) Send to player
-        print("won", self._color)
-
-    def lost(self):
-        # TODO(AD) Send to player
-        print("lost", self._color)
+    def update(self, board):
+        pass
 
     async def _send_state(self, board, roll):
         state = {

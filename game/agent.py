@@ -10,11 +10,7 @@ class Agent(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def won(self):
-        pass
-
-    @abc.abstractmethod
-    def lost(self):
+    def update(self, board):
         pass
 
     def _roll(self):
