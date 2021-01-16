@@ -10,7 +10,7 @@ class TDGammonAgent(Agent):
         self._model = model
         self._player = player
 
-    async def turn(self, board):
+    def turn(self, board):
         roll = self._roll()
 
         while True:
