@@ -135,6 +135,7 @@ class Model:
         logging.debug(f"updating model [player = {player}] [duration = {duration}s]")
 
     def load(self, path):
+        logging.info(f"loading checkpoint [path = {path}]")
         self._model = tf.keras.models.load_model(path)
 
     def save(self):
