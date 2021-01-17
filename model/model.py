@@ -59,6 +59,8 @@ class Model:
             for i in range(len(self._trace)):
                 self._trace[i].assign(tf.zeros(self._trace[i].get_shape()))
 
+        self.save()
+
     def test(self, n_episodes=100):
         logging.info(f"testing model [n_episodes = {n_episodes}]")
         wins = 0
