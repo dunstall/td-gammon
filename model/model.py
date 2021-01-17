@@ -28,10 +28,9 @@ class Model:
         self._x = None
         self._V = None
 
-    def train(self, n_episodes=5000):
+    def train(self, n_episodes=5000, n_validation = 500):
         logging.info(f"training model [n_episodes = {n_episodes}]")
         wins = [0, 0]
-        n_validation = 500
         for episode in range(1, n_episodes + 1):
             if episode % n_validation == 0:
                 self.test()
