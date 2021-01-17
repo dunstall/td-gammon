@@ -19,20 +19,22 @@ def parse_args():
     parser.add_argument(
         "--debug", action='store_true', help="debug logging"
     )
+    parser.add_argument(
+        "--restore", help="path to the model to restore from"
+    )
     return parser.parse_args()
 
 
 def main(args):
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
 
-    m = Model()
+    m = Model(args.restore)
     if args.serve:
         s = Server(m).listen()
-    #  elif args.test:
-        #  asyncio.run(m.test())
+    elif args.test:
+        m.test()
     else:
         m.train()
-        #  asyncio.run(m.train())
 
 
 if __name__ == "__main__":

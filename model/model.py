@@ -1,7 +1,9 @@
 # Copyright 2021 Andrew Dunstall
 
 import copy
+import datetime
 import logging
+import os
 import random
 import time
 
@@ -14,26 +16,31 @@ from model.td_gammon_agent import TDGammonAgent
 
 
 class Model:
-    def __init__(self):
+    def __init__(self, restore_path = None):
         inputs = tf.keras.Input(shape=(198,))
         x = tf.keras.layers.Dense(32, activation="relu")(inputs)
         outputs = tf.keras.layers.Dense(1, activation="sigmoid")(x)
         self._model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
         self._trace = []
-        # TODO(AD) Decay
+        # TODO(AD) Decay (Need to save/restore)
         self._lambda = 0.9
         self._alpha = 0.1
 
         self._x = None
         self._V = None
 
-    def train(self, n_episodes=5000, n_validation = 500):
+        if restore_path is not None:
+            self.load(restore_path)
+
+    def train(self, n_episodes=5000, n_validation=500, n_checkpoint=500):
         logging.info(f"training model [n_episodes = {n_episodes}]")
         wins = [0, 0]
         for episode in range(1, n_episodes + 1):
             if episode % n_validation == 0:
                 self.test()
+            if episode % n_checkpoint == 0:
+                self.save()
 
             player = random.randint(0, 1)
             game = Game(
@@ -124,3 +131,17 @@ class Model:
 
         duration = time.time() - start
         logging.debug(f"updating model [player = {player}] [duration = {duration}s]")
+
+    def load(self, path):
+        self._model = tf.keras.models.load_model(path)
+
+    def save(self):
+        if not os.path.exists('checkpoint'):
+            os.mkdir('checkpoint')
+
+        path = 'checkpoint/model-' + str(datetime.datetime.now()).replace(' ', '_')
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        logging.info(f"saving checkpoint [path = {path}]")
+        self._model.save(path)
