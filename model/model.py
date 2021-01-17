@@ -49,6 +49,10 @@ class Model:
                 wins[1 - player] += 1
             logging.info(f"game complete [wins {wins}] [episodes {episode}]")
 
+            # Reset the trace to zero.
+            for i in range(len(self._trace)):
+                self._trace[i].assign(tf.zeros(self._trace[i].get_shape()))
+
     def test(self, n_episodes=100):
         logging.info(f"testing model [n_episodes = {n_episodes}]")
         wins = 0
