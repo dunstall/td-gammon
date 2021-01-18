@@ -15,6 +15,7 @@ from game.random_agent import RandomAgent
 from model.td_gammon_agent import TDGammonAgent
 
 
+# TODO(AD) Check save and load same for all params
 class Model:
     def __init__(self, restore_path = None):
         inputs = tf.keras.Input(shape=(198,))
@@ -23,15 +24,31 @@ class Model:
         self._model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
         self._trace = []
-        # TODO(AD) Decay (Need to save/restore)
-        self._lambda = 0.9
-        self._alpha = 0.1
 
-        self._x = None
-        self._V = None
+        self._step = tf.Variable(0, trainable=False)
+
+        self._lambda_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+            0.9, 30000, 0.96, staircase=True
+        )
+        self._alpha_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+            0.1, 40000, 0.96, staircase=True
+        )
+
+        game = Game(
+            TDGammonAgent(self, 0),
+            TDGammonAgent(self, 1)
+        )
+        self._x = tf.Variable(game._board.encode_state(0))
+        self._V = tf.Variable(self._model(self._x[np.newaxis]))
 
         if restore_path is not None:
             self.load(restore_path)
+
+    def lambda_decay(self):
+        return tf.maximum(0.7, self._lambda_schedule(self._step))
+
+    def alpha(self):
+        return tf.maximum(0.01, self._alpha_schedule(self._step))
 
     def train(self, n_episodes=5000, n_validation=500, n_checkpoint=500):
         logging.info(f"training model [n_episodes = {n_episodes}]")
@@ -39,7 +56,7 @@ class Model:
         for episode in range(1, n_episodes + 1):
             if episode % n_validation == 0:
                 self.test()
-            if episode % n_checkpoint == 0:
+            if episode > 1 and episode % n_checkpoint == 0:
                 self.save()
 
             player = random.randint(0, 1)
@@ -58,6 +75,8 @@ class Model:
             # Reset the trace to zero.
             for i in range(len(self._trace)):
                 self._trace[i].assign(tf.zeros(self._trace[i].get_shape()))
+
+            self._step.assign_add(1)
 
         self.save()
 
@@ -95,9 +114,9 @@ class Model:
                 max_move = move
 
         if self._x is None:
-            self._x = board.encode_state(player)
+            self._x = tf.Variable(board.encode_state(player))
         if self._V is None:
-            self._V = self._model(self._x[np.newaxis])
+            self._V = tf.Variable(self._model(self._x[np.newaxis]))
 
         duration = time.time() - start
         logging.debug(f"playing move [player = {player}] [move = {max_move}] [winning prob = {max_prob}] [duration = {duration}s]")
@@ -123,28 +142,35 @@ class Model:
 
         delta = tf.reduce_sum(reward + V_next - self._V)
         for i in range(len(grads)):
-            self._trace[i].assign((self._lambda * self._trace[i]) + grads[i])
+            self._trace[i].assign((self.lambda_decay() * self._trace[i]) + grads[i])
 
-            grad_trace = self._alpha * delta * self._trace[i]
+            grad_trace = self.alpha() * delta * self._trace[i]
             self._model.trainable_variables[i].assign_add(grad_trace)
 
-        self._x = x_next
-        self._V = V_next
+        self._x = tf.Variable(x_next)
+        self._V = tf.Variable(V_next)
 
         duration = time.time() - start
         logging.debug(f"updating model [player = {player}] [duration = {duration}s]")
 
     def load(self, path):
         logging.info(f"loading checkpoint [path = {path}]")
-        self._model = tf.keras.models.load_model(path)
+
+        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, x=self._x, V=self._V)
+        ckpt.restore(path)
 
     def save(self):
         if not os.path.exists('checkpoint'):
             os.mkdir('checkpoint')
 
-        path = 'checkpoint/model-' + str(datetime.datetime.now()).replace(' ', '_')
-        if not os.path.exists(path):
-            os.mkdir(path)
+        directory = 'checkpoint/model-' + str(datetime.datetime.now()).replace(' ', '_')
+        if not os.path.exists(directory):
+            os.mkdir(directory)
+
+        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, x=self._x, V=self._V)
+        path = ckpt.save(directory)
 
         logging.info(f"saving checkpoint [path = {path}]")
-        self._model.save(path)
+
+        return path
+
