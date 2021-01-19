@@ -80,7 +80,7 @@ class Model:
 
         self.save()
 
-    def test(self, n_episodes=100):
+    def test(self, n_episodes):
         logging.info(f"testing model [n_episodes = {n_episodes}]")
         wins = 0
         for episode in range(1, n_episodes + 1):
@@ -96,6 +96,8 @@ class Model:
                 wins += 1
             logging.info(f"game complete [model wins {wins}] [episodes {episode}]")
 
+        logging.info(f"test complete [ratio {wins/n_episodes}]")
+
     def action(self, board, roll, player):
         max_move = None
         max_prob = -np.inf
@@ -109,6 +111,10 @@ class Model:
 
             state = afterstate.encode_state(player)[np.newaxis]
             prob = tf.reduce_sum(self._model(state))
+            # Reward is 1 if player 2 wins, 0 otherwise. So player 1 is trying
+            # to minimize prob.
+            # TODO(AD) Refactor
+            prob = 1 - prob if player == 0 else prob
             if prob > max_prob:
                 max_prob = prob
                 max_move = move
@@ -138,7 +144,13 @@ class Model:
                     tf.zeros(grad.get_shape()), trainable=False
                 ))
 
-        reward = 1 if board.won(player) else 0
+        #  reward = 1 if board.won(player) else 0
+        # TODO(AD) Switch to 1 if white won.
+        # TODO(AD) Refactor
+        if player == 1 and board.won(player):
+            reward = 1
+        else:
+            reward = 0
 
         delta = tf.reduce_sum(reward + V_next - self._V)
         for i in range(len(grads)):
