@@ -50,12 +50,12 @@ class Model:
     def alpha(self):
         return tf.maximum(0.01, self._alpha_schedule(self._step))
 
-    def train(self, n_episodes=5000, n_validation=500, n_checkpoint=500):
+    def train(self, n_episodes=5000, n_validation=500, n_checkpoint=500, n_tests=1000):
         logging.info(f"training model [n_episodes = {n_episodes}]")
         wins = [0, 0]
         for episode in range(1, n_episodes + 1):
             if episode % n_validation == 0:
-                self.test()
+                self.test(n_tests)
             if episode > 1 and episode % n_checkpoint == 0:
                 self.save()
 
