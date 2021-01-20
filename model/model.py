@@ -26,7 +26,7 @@ class Model:
         self._trace = []
 
         self._step = tf.Variable(0, trainable=False)
-
+        # TODO(AD) alpha  = 0.1 and lambda = 0.7. ? from paper
         self._lambda_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
             0.9, 30000, 0.96, staircase=True
         )
@@ -38,20 +38,14 @@ class Model:
             TDGammonAgent(self, 0),
             TDGammonAgent(self, 1)
         )
-        self._x = tf.Variable(game._board.encode_state(0))
-        self._V = tf.Variable(self._model(self._x[np.newaxis]))
+        self._state = tf.Variable(game._board.encode_state(0))
+        self._value = tf.Variable(self._model(self._state[np.newaxis]))
 
         if restore_path is not None:
             self.load(restore_path)
 
-    def lambda_decay(self):
-        return tf.maximum(0.7, self._lambda_schedule(self._step))
-
-    def alpha(self):
-        return tf.maximum(0.01, self._alpha_schedule(self._step))
-
     def train(self, n_episodes=5000, n_validation=500, n_checkpoint=500, n_tests=1000):
-        logging.info(f"training model [n_episodes = {n_episodes}]")
+        logging.info("training model [n_episodes = %d]", n_episodes)
         wins = [0, 0]
         for episode in range(1, n_episodes + 1):
             if episode % n_validation == 0:
@@ -70,9 +64,9 @@ class Model:
                 wins[player] += 1
             else:
                 wins[1 - player] += 1
-            logging.info(f"game complete [wins {wins}] [episodes {episode}]")
+            logging.info("game complete [wins %d] [episodes %d]", wins, episode)
 
-            # Reset the trace to zero.
+            # Reset the trace to zero after each episode.
             for i in range(len(self._trace)):
                 self._trace[i].assign(tf.zeros(self._trace[i].get_shape()))
 
@@ -81,7 +75,7 @@ class Model:
         self.save()
 
     def test(self, n_episodes):
-        logging.info(f"testing model [n_episodes = {n_episodes}]")
+        logging.info("testing model [n_episodes = %d]", n_episodes)
         wins = 0
         for episode in range(1, n_episodes + 1):
             player = random.randint(0, 1)
@@ -94,9 +88,9 @@ class Model:
 
             if game.won(player):
                 wins += 1
-            logging.info(f"game complete [model wins {wins}] [episodes {episode}]")
+            logging.info("game complete [model wins %d] [episodes %d]", wins, episode)
 
-        logging.info(f"test complete [ratio {wins/n_episodes}]")
+        logging.info("test complete [ratio %f]", wins/n_episodes)
 
     def action(self, board, roll, player):
         max_move = None
@@ -116,13 +110,13 @@ class Model:
                 max_prob = prob
                 max_move = move
 
-        if self._x is None:
-            self._x = tf.Variable(board.encode_state(player))
-        if self._V is None:
-            self._V = tf.Variable(self._model(self._x[np.newaxis]))
+        if self._state is None:
+            self._state = tf.Variable(board.encode_state(player))
+        if self._value is None:
+            self._value = tf.Variable(self._model(self._state[np.newaxis]))
 
         duration = time.time() - start
-        logging.debug(f"playing move [player = {player}] [move = {max_move}] [winning prob = {max_prob}] [duration = {duration}s]")
+        logging.debug("playing move [player = %d] [move = %s] [winning prob = %f] [duration = %ds]", player, str(max_move), max_prob, duration)
         return max_move
 
     def update(self, board, player):
@@ -130,10 +124,10 @@ class Model:
         x_next = board.encode_state(player)
 
         with tf.GradientTape() as tape:
-            V_next = self._model(x_next[np.newaxis])
+            value_next = self._model(x_next[np.newaxis])
 
         tvars = self._model.trainable_variables
-        grads = tape.gradient(V_next, tvars)
+        grads = tape.gradient(value_next, tvars)
 
         if len(self._trace) == 0:
             for grad in grads:
@@ -146,23 +140,23 @@ class Model:
         else:
             reward = 0
 
-        delta = tf.reduce_sum(reward + V_next - self._V)
+        delta = tf.reduce_sum(reward + value_next - self._value)
         for i in range(len(grads)):
-            self._trace[i].assign((self.lambda_decay() * self._trace[i]) + grads[i])
+            self._trace[i].assign((self._lambda() * self._trace[i]) + grads[i])
 
-            grad_trace = self.alpha() * delta * self._trace[i]
+            grad_trace = self._alpha() * delta * self._trace[i]
             self._model.trainable_variables[i].assign_add(grad_trace)
 
-        self._x = tf.Variable(x_next)
-        self._V = tf.Variable(V_next)
+        self._state = tf.Variable(x_next)
+        self._value = tf.Variable(value_next)
 
         duration = time.time() - start
-        logging.debug(f"updating model [player = {player}] [duration = {duration}s]")
+        logging.debug("updating model [player = %d] [duration = %ds]", player, duration)
 
     def load(self, path):
-        logging.info(f"loading checkpoint [path = {path}]")
+        logging.info("loading checkpoint [path = %s]", path)
 
-        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, x=self._x, V=self._V)
+        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, x=self._state, value=self._value)
         ckpt.restore(path)
 
     def save(self):
@@ -173,10 +167,15 @@ class Model:
         if not os.path.exists(directory):
             os.mkdir(directory)
 
-        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, x=self._x, V=self._V)
+        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, state=self._state, value=self._value)
         path = ckpt.save(directory)
 
-        logging.info(f"saving checkpoint [path = {path}]")
+        logging.info("saving checkpoint [path = %s]", path)
 
         return path
 
+    def _lambda(self):
+        return tf.maximum(0.7, self._lambda_schedule(self._step))
+
+    def _alpha(self):
+        return tf.maximum(0.01, self._alpha_schedule(self._step))
