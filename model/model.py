@@ -19,7 +19,7 @@ from model.td_gammon_agent import TDGammonAgent
 class Model:
     def __init__(self, restore_path = None):
         inputs = tf.keras.Input(shape=(198,))
-        x = tf.keras.layers.Dense(32, activation="relu")(inputs)
+        x = tf.keras.layers.Dense(40, activation="sigmoid")(inputs)
         outputs = tf.keras.layers.Dense(1, activation="sigmoid")(x)
         self._model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
@@ -111,10 +111,7 @@ class Model:
 
             state = afterstate.encode_state(player)[np.newaxis]
             prob = tf.reduce_sum(self._model(state))
-            # Reward is 1 if player 2 wins, 0 otherwise. So player 1 is trying
-            # to minimize prob.
-            # TODO(AD) Refactor
-            prob = 1 - prob if player == 0 else prob
+            prob = 1 - prob if player == 1 else prob
             if prob > max_prob:
                 max_prob = prob
                 max_move = move
@@ -144,10 +141,7 @@ class Model:
                     tf.zeros(grad.get_shape()), trainable=False
                 ))
 
-        #  reward = 1 if board.won(player) else 0
-        # TODO(AD) Switch to 1 if white won.
-        # TODO(AD) Refactor
-        if player == 1 and board.won(player):
+        if player == 0 and board.won(player):
             reward = 1
         else:
             reward = 0
