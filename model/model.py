@@ -15,25 +15,28 @@ from game.random_agent import RandomAgent
 from model.td_gammon_agent import TDGammonAgent
 
 
-# TODO(AD) Check save and load same for all params
 class Model:
+    """
+    Model wraps the neural net and provides methods for training and
+    action selection by the agent.
+    """
+    _LAMBDA = 0.7
+    _ALPHA = 0.1
+
     def __init__(self, restore_path = None):
+        """Construct a model with random weights.
+
+        Arguments:
+        restore_path -- path to stored checkpoint to restore if given
+            (default None)
+        """
         inputs = tf.keras.Input(shape=(198,))
         x = tf.keras.layers.Dense(40, activation="sigmoid")(inputs)
-        # TODO(AD) Add all 4 outputs - copy papers exactly.
         outputs = tf.keras.layers.Dense(1, activation="sigmoid")(x)
         self._model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
+        # Lazily initialize trace once the shape of the gradients is known.
         self._trace = []
-
-        self._step = tf.Variable(0, trainable=False)
-        # TODO(AD) alpha  = 0.1 and lambda = 0.7. ? from paper
-        self._lambda_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-            0.9, 30000, 0.96, staircase=True
-        )
-        self._alpha_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-            0.1, 40000, 0.96, staircase=True
-        )
 
         game = Game(
             TDGammonAgent(self, 0),
@@ -46,8 +49,17 @@ class Model:
             self.load(restore_path)
 
     def train(self, n_episodes=5000, n_validation=500, n_checkpoint=500, n_tests=1000):
+        """Trains the model.
+
+        Arguments:
+        n_episodes -- number of episodes to train (default 5000)
+        n_validation -- number of episodes between testing the model
+            (default 500)
+        n_checkpoint -- number of episodes between saving the model
+            (default 500)
+        n_tests -- number of episodes to test (default 1000)
+        """
         logging.info("training model [n_episodes = %d]", n_episodes)
-        wins = [0, 0]
         for episode in range(1, n_episodes + 1):
             if episode % n_validation == 0:
                 self.test(n_tests)
@@ -61,27 +73,21 @@ class Model:
             )
             game.play()
 
-            if game.won(player):
-                wins[player] += 1
-            else:
-                wins[1 - player] += 1
-            logging.info("game complete [wins %s] [episodes %d]", str(wins), episode)
-
-            # Reset the trace to zero after each episode.
-            for i in range(len(self._trace)):
-                self._trace[i].assign(tf.zeros(self._trace[i].get_shape()))
-
-            self._step.assign_add(1)
+            self._reset_trace()
 
         self.save()
 
     def test(self, n_episodes=100):
+        """Tests the model against a random agent.
+
+        Arguments:
+        n_episodes -- number of episodes to test (default 100)
+        """
         logging.info("testing model [n_episodes = %d]", n_episodes)
         wins = 0
         for episode in range(1, n_episodes + 1):
             player = random.randint(0, 1)
             game = Game(
-                # TODO(AD) Disable training?
                 TDGammonAgent(self, player),
                 RandomAgent(1 - player)
             )
@@ -89,14 +95,27 @@ class Model:
 
             if game.won(player):
                 wins += 1
+
             logging.info("game complete [model wins %d] [episodes %d]", wins, episode)
 
-        logging.info("test complete [ratio %f]", wins/n_episodes)
+        logging.info("test complete [model win ratio %f]", wins/n_episodes)
 
     def action(self, board, roll, player):
+        """Predicts the optimal move given the current state.
+
+        This calculates each afterstate for all possible moves given the
+        current state and selects the action that leads to the state with
+        the greatest afterstate value.
+
+        Arguments:
+        board -- board containing the game state
+        roll -- list of dice rolls left in the players turn
+        player -- number of the player
+        """
+        start = time.time()
+
         max_move = None
         max_prob = -np.inf
-        start = time.time()
         permitted = board.permitted_moves(roll, player)
         for move in permitted:
             afterstate = copy.deepcopy(board)
@@ -106,7 +125,10 @@ class Model:
 
             state = afterstate.encode_state(player)[np.newaxis]
             prob = tf.reduce_sum(self._model(state))
+            # The network gives the probability of player 0 winning so must
+            # change if player 1.
             prob = 1 - prob if player == 1 else prob
+
             if prob > max_prob:
                 max_prob = prob
                 max_move = move
@@ -121,15 +143,27 @@ class Model:
         return max_move
 
     def update(self, board, player):
-        start = time.time()
-        x_next = board.encode_state(player)
+        """Updates the model given the current state and reward.
 
+        This is expected to be called after the player has made their move.
+
+        The aim is to move the predicted values towards the actual reward
+        using TD-lambda.
+
+        Arguments:
+        board -- board containing the game state
+        roll -- list of dice rolls left in the players turn
+        """
+        start = time.time()
+
+        x_next = board.encode_state(player)
         with tf.GradientTape() as tape:
             value_next = self._model(x_next[np.newaxis])
 
-        tvars = self._model.trainable_variables
-        grads = tape.gradient(value_next, tvars)
+        trainable_vars = self._model.trainable_variables
+        grads = tape.gradient(value_next, trainable_vars)
 
+        # Lazily initialize when gradient shape known.
         if len(self._trace) == 0:
             for grad in grads:
                 self._trace.append(tf.Variable(
@@ -143,9 +177,9 @@ class Model:
 
         delta = tf.reduce_sum(reward + value_next - self._value)
         for i in range(len(grads)):
-            self._trace[i].assign((self._lambda() * self._trace[i]) + grads[i])
+            self._trace[i].assign((self._LAMBDA * self._trace[i]) + grads[i])
 
-            grad_trace = self._alpha() * delta * self._trace[i]
+            grad_trace = self._ALPHA * delta * self._trace[i]
             self._model.trainable_variables[i].assign_add(grad_trace)
 
         self._state = tf.Variable(x_next)
@@ -157,7 +191,7 @@ class Model:
     def load(self, path):
         logging.info("loading checkpoint [path = %s]", path)
 
-        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, x=self._state, value=self._value)
+        ckpt = tf.train.Checkpoint(model=self._model, state=self._state, value=self._value)
         ckpt.restore(path)
 
     def save(self):
@@ -168,15 +202,13 @@ class Model:
         if not os.path.exists(directory):
             os.mkdir(directory)
 
-        ckpt = tf.train.Checkpoint(model=self._model, step=self._step, state=self._state, value=self._value)
+        ckpt = tf.train.Checkpoint(model=self._model, state=self._state, value=self._value)
         path = ckpt.save(directory)
 
         logging.info("saving checkpoint [path = %s]", path)
 
         return path
 
-    def _lambda(self):
-        return tf.maximum(0.7, self._lambda_schedule(self._step))
-
-    def _alpha(self):
-        return tf.maximum(0.01, self._alpha_schedule(self._step))
+    def _reset_trace(self):
+        for i in range(len(self._trace)):
+            self._trace[i].assign(tf.zeros(self._trace[i].get_shape()))
