@@ -11,13 +11,10 @@ class RandomAgent(Agent):
         self._player = player
 
     def turn(self, board):
-        roll = self._roll()
+        rolls = self._roll()
 
-        while True:
-            if len(roll) == 0:
-                return
-
-            permitted = board.permitted_moves(roll, self._player)
+        while len(rolls) > 0:
+            permitted = board.permitted_moves(rolls, self._player)
             if len(permitted) == 0:
                 return
 
@@ -26,7 +23,7 @@ class RandomAgent(Agent):
                 logging.error("td-gammon player requested invalid move")
                 continue
 
-            del roll[roll.index(move[1])]
+            del rolls[rolls.index(move[1])]
 
     def update(self, board):
         pass

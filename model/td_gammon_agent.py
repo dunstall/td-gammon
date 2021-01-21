@@ -11,13 +11,10 @@ class TDGammonAgent(Agent):
         self._player = player
 
     def turn(self, board):
-        roll = self._roll()
+        rolls = self._roll()
 
-        while True:
-            if len(roll) == 0:
-                return
-
-            move = self._model.action(board, roll, self._player)
+        while len(rolls) > 0:
+            move = self._model.action(board, rolls, self._player)
             # When no moves remaining end the turn.
             if move is None:
                 return
@@ -26,7 +23,7 @@ class TDGammonAgent(Agent):
                 logging.error("td-gammon player requested invalid move")
                 continue
 
-            del roll[roll.index(move[1])]
+            del rolls[rolls.index(move[1])]
 
     def update(self, board):
         self._model.update(board, self._player)
