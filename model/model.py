@@ -61,6 +61,7 @@ class Model:
         """
         logging.info("training model [n_episodes = %d]", n_episodes)
         for episode in range(1, n_episodes + 1):
+            logging.info("running episode [episode = %d]", episode)
             if episode % n_validation == 0:
                 self.test(n_tests)
             if episode > 1 and episode % n_checkpoint == 0:
