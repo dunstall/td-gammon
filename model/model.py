@@ -176,11 +176,11 @@ class Model:
         else:
             reward = 0
 
-        delta = tf.reduce_sum(reward + value_next - self._value)
+        td_error = tf.reduce_sum(reward + value_next - self._value)
         for i in range(len(grads)):
             self._trace[i].assign((self._LAMBDA * self._trace[i]) + grads[i])
 
-            grad_trace = self._ALPHA * delta * self._trace[i]
+            grad_trace = self._ALPHA * td_error * self._trace[i]
             self._model.trainable_variables[i].assign_add(grad_trace)
 
         self._state = tf.Variable(x_next)
