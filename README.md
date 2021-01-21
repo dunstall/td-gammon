@@ -14,7 +14,7 @@ Implementation of TD-Gammon with Keras/Tensorflow.
   source td-gammon-env/bin/activate
 ```
 
-3. Install PIP packages
+3. Install pip packages
 ```bash
   pip3 install -r requirements.txt
 ```
@@ -46,6 +46,9 @@ optional arguments:
 ```bash
   python3 main.py --restore checkpoints/mymodel
 ```
+
+#### Notebook
+Alternatively run the Jupyter notebook `notebook.ipynb` which will train and test the model.
 
 ## Resources
 * [TD-Gammon Paper](https://pdfs.semanticscholar.org/917e/e68192527f0722fac966163f26b7a4e8e5f3.pdf?_ga=2.138006640.1591278561.1609908105-703813112.1609908105)
