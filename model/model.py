@@ -20,6 +20,7 @@ class Model:
     def __init__(self, restore_path = None):
         inputs = tf.keras.Input(shape=(198,))
         x = tf.keras.layers.Dense(40, activation="sigmoid")(inputs)
+        # TODO(AD) Add all 4 outputs - copy papers exactly.
         outputs = tf.keras.layers.Dense(1, activation="sigmoid")(x)
         self._model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
@@ -64,7 +65,7 @@ class Model:
                 wins[player] += 1
             else:
                 wins[1 - player] += 1
-            logging.info("game complete [wins %d] [episodes %d]", wins, episode)
+            logging.info("game complete [wins %s] [episodes %d]", str(wins), episode)
 
             # Reset the trace to zero after each episode.
             for i in range(len(self._trace)):
@@ -74,7 +75,7 @@ class Model:
 
         self.save()
 
-    def test(self, n_episodes):
+    def test(self, n_episodes=100):
         logging.info("testing model [n_episodes = %d]", n_episodes)
         wins = 0
         for episode in range(1, n_episodes + 1):
